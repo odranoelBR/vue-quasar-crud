@@ -1,5 +1,5 @@
    
-Logo...
+![Quasar Crud](https://github.com/odranoelBR/vue-quasar-crud/blob/develop/docs/logo.PNG)
 
 > Quasar Crud Component based on QTable using Axios API to fetch remote data.
 
