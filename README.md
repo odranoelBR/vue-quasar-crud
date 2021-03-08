@@ -1,12 +1,20 @@
-<img src="https://img.shields.io/npm/v/quasar-ui-quasar-crud.svg?label=quasar-ui-quasar-crud">
-<img src="https://img.shields.io/npm/v/quasar-app-extension-quasar-crud.svg?label=quasar-app-extension-quasar-crud">
+   
+Logo...
 
-# Structure
-* [/ui](ui) - standalone npm package
-* [/app-extension](app-extension) - Quasar app extension
+> Quasar Crud Component based on QTable using Axios API to fetch remote data.
 
-# Donate
-If you appreciate the work that went into this project, please consider [donating to Quasar](https://donate.quasar.dev).
+## Links
+* [Vuejs Page](https://vuejs.org/)
+* [Quasar Framework Page](http://quasar-framework.org/)
 
-# License
-MIT (c) odranoelo_O@hotmail.com
+## Demo 
+Coming...
+
+## Infos
+* Using Quasar default quasar extesion template
+
+
+## Dependecies 
+* [Axios.js](https://github.com/mzabriskie/axios) as HTTP client / Config from 
+
+
