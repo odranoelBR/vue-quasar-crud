@@ -14,7 +14,6 @@ Coming...
 * Using Quasar default quasar extesion template
 
 
-## Dependecies 
-* [Axios.js](https://github.com/mzabriskie/axios) as HTTP client / Config from 
-
+## External Dependecies 
+* [Axios.js](https://github.com/mzabriskie/axios) as HTTP client 
 

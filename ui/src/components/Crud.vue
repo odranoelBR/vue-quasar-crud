@@ -110,7 +110,7 @@
               <component
                 :is="column.type"
                 v-model="column.value"
-                v-mask="column.type == 'QInput' && column.mask ? column.mask : ''"
+                :mask="column.type == 'QInput' && column.mask ? column.mask : ''"
                 v-validate="column.validate"
                 :type="column.subType"
                 :name="column.name"
@@ -155,16 +155,12 @@
 </template>
 
 <script>
-import AwesomeMask from 'awesome-mask'
 import { QSelect, QInput, QOptionGroup, QToggle } from 'quasar'
 
 export default {
   name: 'Crud',
   components: {
     QSelect, QInput, QOptionGroup, QToggle
-  },
-  directives: {
-    'mask': AwesomeMask
   },
   props: {
     listIndex: { type: String, required: true },
@@ -189,7 +185,8 @@ export default {
     iconDeleteColor: { type: [String, Function], default: 'negative' },
     msgDelete: { type: [String, Function], default: 'Prosseguir com a deleção deste item ?' },
     titleDelete: { type: [String, Function], default: 'Deletar' },
-    msgDeleteSucess: { type: [String, Function], default: 'Deletado com sucesso!' }
+    msgDeleteSucess: { type: [String, Function], default: 'Deletado com sucesso!' },
+    http: { type: Function, required: true }
   },
   data: () => ({
     group: [],
