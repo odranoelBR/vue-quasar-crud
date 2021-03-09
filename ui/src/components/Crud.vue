@@ -111,25 +111,24 @@
                 :is="column.type"
                 v-model="column.value"
                 :mask="column.type == 'QInput' && column.mask ? column.mask : ''"
-                v-validate="column.validate"
                 :type="column.subType"
                 :name="column.name"
                 :float-label="column.label"
                 :label="column.label"
                 :options="column.options"
-                :class="errors.has(column.name) ? 'text-negative' : 'text-positive'"
                 :inline="column.inline"
                 :disable="column.disabled"
                 filter
                 left-label
               />
+              <!-- :class="errors.has(column.name) ? 'text-negative' : 'text-positive'" -->
 
-              <span
+              <!-- <span
                 v-show="errors.has(column.name)"
                 class="text-negative"
               >
                 {{ errors.first(column.name) }}
-              </span>
+              </span> -->
             </div>
           </div>
         </q-card-section>
@@ -235,10 +234,12 @@ export default {
       return this.selected.length > 0
     },
     hasValidationErrors () {
-      return Object.keys(this.fields).some(key => this.fields[key].invalid)
+      return ''
+      //return Object.keys(this.fields).some(key => this.fields[key].invalid)
     },
     isFormDirty () {
-      return Object.keys(this.fields).some(key => this.fields[key].dirty)
+      return ''
+      //return Object.keys(this.fields).some(key => this.fields[key].dirty)
     },
     hasCustomSelectedSlot () {
       return !!this.$slots['customSelected'] || !!this.$scopedSlots['customSelected']
@@ -291,7 +292,7 @@ export default {
         this.projectionForQuery
 
       this.loading = true
-      this.$http.get(url)
+      this.http.get(url)
         .then(response => {
           this.response = response.data
           this.pagination.rowsNumber = response.data.page.totalElements
@@ -305,7 +306,7 @@ export default {
     },
     delete () {
       this.loading = true
-      this.$http.delete(`${this.api}/${this.selected[0].id}`)
+      this.http.delete(`${this.api}/${this.selected[0].id}`)
         .then(response => {
           this.$q.notify({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.get()
@@ -327,7 +328,7 @@ export default {
       this.post()
     },
     post () {
-      this.$http.post(this.api, this.objectToSave)
+      this.http.post(this.api, this.objectToSave)
         .then(response => {
           this.get()
           this.$q.notify({ type: 'positive', message: 'Criado com sucesso!' })
@@ -341,7 +342,7 @@ export default {
         })
     },
     put () {
-      this.$http.put(`${this.api}/${this.selected[0].id}`, this.objectToSave)
+      this.http.put(`${this.api}/${this.selected[0].id}`, this.objectToSave)
         .then(response => {
           this.get()
           this.$q.notify({ type: 'positive', message: 'Atualizado com sucesso!' })
