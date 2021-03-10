@@ -5,26 +5,13 @@
   >
     <crud
       :columns.sync="columns"
-      :visible-columns="['nome', 'sigla', 'tipo']"
-      :can-create="true"
-      :can-delete="true"
-      :can-edit="false"
       :selectable-rule="() => {}"
-      :create-rule="true"
-      :rows-per-page="25"
-      :params="``"
       :http="axios"
       :get-on-start="true"
-      :get-on-param-change="true"
-      filter-column="nome"
-      search="/search/findByCodigoAndNomeContaining"
-      msg-delete="Deseja remover este posto ?"
-      title-delete="Remover"
-      icon-delete="delete"
-      :item-name="`Posto de `"
-      list-index="postoIdentificacaos"
-      api="identificacao-api/postoIdentificacaos"
-      row-key="nome"
+      search=""
+      :list-index="list => list"
+      api="mockend-api/posts"
+      row-key=""
     />
   </q-page>
 </template>
@@ -34,15 +21,18 @@ import Crud from '../../../src/components/Crud'
 import axios from 'axios'
 export default {
   components: { Crud },
+  created () {
+    this.axios = axios.create({ baseURL: 'https://mockend.com/odranoelBR/' })
+  },
   data: () => ({
-    axios,
+    axios: null,
     columns: [
       {
-        name: 'nome',
+        name: 'title',
         required: true,
-        label: 'Nome',
-        align: 'nome',
-        field: 'nome',
+        label: 'title',
+        align: 'title',
+        field: 'title',
         sortable: true,
         type: 'QInput',
         value: '',
@@ -51,11 +41,11 @@ export default {
         showCreate: true
       },
       {
-        name: 'sigla',
+        name: 'views',
         required: true,
-        label: 'Sigla',
-        align: 'sigla',
-        field: 'sigla',
+        label: 'views',
+        align: 'views',
+        field: 'views',
         sortable: true,
         type: 'QInput',
         static: true,
@@ -66,11 +56,11 @@ export default {
         showCreate: false
       },
       {
-        name: 'tipo',
+        name: 'published',
         required: true,
-        label: 'Tipo',
-        align: 'tipo',
-        field: 'tipo',
+        label: 'published',
+        align: 'published',
+        field: 'published',
         sortable: true,
         type: 'QSelect',
         value: '',
@@ -83,17 +73,7 @@ export default {
         size: '6',
         validate: 'required',
         showCreate: true
-      },
-      {
-        name: 'codigo',
-        label: 'codigo',
-        align: 'center',
-        field: 'codigo',
-        formatForPost: val => val.value,
-        value: '',
-        static: true
       }
-
     ]
   })
 }

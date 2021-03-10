@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-table
-      :data="listaDados"
+      :data="dataByIndex"
       :columns="columns"
       :row-key="rowKey"
       :pagination.sync="pagination"
@@ -26,7 +26,7 @@
           </q-td>
 
           <template v-for="column in columns">
-            <template v-if="visibleColumns ? visibleColumns.includes(column.name) : true">
+            <template v-if="showCustomVisibleColumns">
               <q-td
                 v-if="column.customize"
                 :key="column.name"
@@ -162,7 +162,7 @@ export default {
     QSelect, QInput, QOptionGroup, QToggle
   },
   props: {
-    listIndex: { type: String, required: true },
+    listIndex: { type: Function, required: true },
     api: { type: String, required: true },
     columns: { type: Array, required: true },
     rowKey: { type: String, required: true },
@@ -171,7 +171,6 @@ export default {
     canEdit: { type: Boolean, default: false },
     title: { type: String, default: '' },
     itemName: { type: String, default: '' },
-    projection: { type: String, default: '' },
     selectableRule: { type: Function, default: () => true },
     createRule: { type: Boolean, default: true },
     rowsPerPage: { type: Number, default: 5 },
@@ -182,9 +181,9 @@ export default {
     visibleColumns: { type: Array, default: () => ([]) },
     iconDelete: { type: [String, Function], default: 'delete' },
     iconDeleteColor: { type: [String, Function], default: 'negative' },
-    msgDelete: { type: [String, Function], default: 'Prosseguir com a deleção deste item ?' },
-    titleDelete: { type: [String, Function], default: 'Deletar' },
-    msgDeleteSucess: { type: [String, Function], default: 'Deletado com sucesso!' },
+    msgDelete: { type: [String, Function], default: 'Delete item ?' },
+    titleDelete: { type: [String, Function], default: 'Delete' },
+    msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
     http: { type: Function, required: true }
   },
   data: () => ({
@@ -192,9 +191,7 @@ export default {
     loading: false,
     modalOpened: false,
     selected: [],
-    response: {
-      _embedded: []
-    },
+    response: [],
     pagination: {
       page: 0,
       rowsPerPage: 10,
@@ -203,12 +200,16 @@ export default {
       sortBy: 'status'
     }
   }),
+  projection: { type: String, default: '' },
   computed: {
+    showCustomVisibleColumns () {
+      return this.visibleColumns.lenght > 0 ? this.visibleColumns.includes(column.name) : true
+    },
     filteredColumns () {
       return this.columns.filter(column => column.showCreate)
     },
-    listaDados () {
-      return this.response._embedded[this.listIndex]
+    dataByIndex () {
+      return this.listIndex(this.response)
     },
     apiUri () {
       return `${this.api}?page=${this.pagination.page}&size=${this.pagination.rowsPerPage}&sort=${this.pagination.sortBy},${this.sortDirection}`
@@ -226,9 +227,6 @@ export default {
     },
     selectionMode () {
       return (this.canCreate || this.canEdit) ? 'single' : 'none'
-    },
-    projectionForQuery () {
-      return this.projection ? `projection=${this.projection}` : ''
     },
     someSelected () {
       return this.selected.length > 0
@@ -288,19 +286,18 @@ export default {
       let url = withSearch +
         `page=${--page}&` +
         `size=${this.pagination.rowsPerPage}&` +
-        `sort=${this.pagination.sortBy},${this.sortDirection}&` +
-        this.projectionForQuery
+        `sort=${this.pagination.sortBy},${this.sortDirection}&`
 
       this.loading = true
       this.http.get(url)
         .then(response => {
           this.response = response.data
-          this.pagination.rowsNumber = response.data.page.totalElements
-          this.pagination.rowsPerPage = response.data.page.size
+          //this.pagination.rowsNumber = response.data.page.totalElements
+          //this.pagination.rowsPerPage = response.data.page.size
           this.loading = false
         })
         .catch(error => {
-          this.$bus.$emit('error', error)
+          this.$emit('error', error)
           this.loading = false
         })
     },
@@ -314,7 +311,7 @@ export default {
           this.loading = false
         })
         .catch(error => {
-          this.$bus.$emit('error', error)
+          this.$emit('error', error)
           this.loading = false
         })
     },
@@ -337,7 +334,7 @@ export default {
           this.toggleModal()
         })
         .catch(error => {
-          this.$bus.$emit('error', error)
+          this.$emit('error', error)
           this.loading = false
         })
     },
