@@ -5,13 +5,13 @@
   >
     <crud
       :columns.sync="columns"
-      :selectable-rule="() => {}"
       :http="axios"
+      :can-edit="true"
       :get-on-start="true"
       search=""
       :list-index="list => list"
       api="mockend-api/posts"
-      row-key=""
+      row-key="id"
     />
   </q-page>
 </template>
@@ -30,20 +30,20 @@ export default {
       {
         name: 'title',
         required: true,
-        label: 'title',
+        label: 'Title',
         align: 'title',
         field: 'title',
         sortable: true,
         type: 'QInput',
         value: '',
         size: '6',
-        validate: 'required',
+        rules: [val => val && val.length > 0 || 'Please type something'],
         showCreate: true
       },
       {
         name: 'views',
         required: true,
-        label: 'views',
+        label: 'Views',
         align: 'views',
         field: 'views',
         sortable: true,
@@ -51,14 +51,12 @@ export default {
         static: true,
         value: '',
         size: '6',
-        mask: 'AA',
-        validate: 'required',
         showCreate: false
       },
       {
         name: 'published',
         required: true,
-        label: 'published',
+        label: 'Published',
         align: 'published',
         field: 'published',
         sortable: true,
@@ -66,9 +64,8 @@ export default {
         value: '',
         formatForPost: val => val.value,
         options: [
-          { label: 'Militar', value: 'M' },
-          { label: 'Dependente', value: 'D' },
-          { label: 'Pensionista', value: 'P' }
+          { label: 'Yes', value: true },
+          { label: 'No', value: false }
         ],
         size: '6',
         validate: 'required',
@@ -80,7 +77,4 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.list
-  width: 700px
-  max-width: 100%
 </style>

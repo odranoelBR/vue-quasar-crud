@@ -18,7 +18,10 @@
         slot-scope="props"
       >
         <q-tr :props="props">
-          <q-td auto-width>
+          <q-td
+            auto-width
+            v-if="selectionMode !== 'none'"
+          >
             <q-checkbox
               v-if="selectableRule(props.row)"
               v-model="props.selected"
@@ -108,8 +111,8 @@
               :class="`col-${column.size}`"
             >
               <component
-                :is="column.type"
                 v-model="column.value"
+                :is="column.type"
                 :mask="column.type == 'QInput' && column.mask ? column.mask : ''"
                 :type="column.subType"
                 :name="column.name"
@@ -118,6 +121,8 @@
                 :options="column.options"
                 :inline="column.inline"
                 :disable="column.disabled"
+                :rules="column.rules"
+                :ref="column.name"
                 filter
                 left-label
               />
@@ -141,7 +146,6 @@
             />
           </div>
           <q-btn
-            :disabled="(hasValidationErrors && isFormDirty) || !isFormDirty"
             color="positive"
             class="text-right"
             icon="check"
@@ -162,29 +166,29 @@ export default {
     QSelect, QInput, QOptionGroup, QToggle
   },
   props: {
-    listIndex: { type: Function, required: true },
     api: { type: String, required: true },
     columns: { type: Array, required: true },
-    rowKey: { type: String, required: true },
+    createRule: { type: Boolean, default: true },
     canCreate: { type: Boolean, default: false },
     canDelete: { type: Boolean, default: false },
     canEdit: { type: Boolean, default: false },
-    title: { type: String, default: '' },
-    itemName: { type: String, default: '' },
-    selectableRule: { type: Function, default: () => true },
-    createRule: { type: Boolean, default: true },
-    rowsPerPage: { type: Number, default: 5 },
-    search: { type: String, default: '' },
-    params: { type: String, default: '' },
-    getOnStart: { type: Boolean, default: true },
-    getOnParamChange: { type: Boolean, default: false },
-    visibleColumns: { type: Array, default: () => ([]) },
+    http: { type: Function, required: true },
     iconDelete: { type: [String, Function], default: 'delete' },
     iconDeleteColor: { type: [String, Function], default: 'negative' },
+    itemName: { type: String, default: '' },
+    getOnStart: { type: Boolean, default: true },
+    getOnParamChange: { type: Boolean, default: false },
+    listIndex: { type: Function, required: true },
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
-    titleDelete: { type: [String, Function], default: 'Delete' },
     msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
-    http: { type: Function, required: true }
+    selectableRule: { type: Function, default: () => true },
+    search: { type: String, default: '' },
+    rowKey: { type: String, required: true },
+    rowsPerPage: { type: Number, default: 5 },
+    params: { type: String, default: '' },
+    title: { type: String, default: '' },
+    visibleColumns: { type: Array, default: () => ([]) },
+    titleDelete: { type: [String, Function], default: 'Delete' },
   },
   data: () => ({
     group: [],
@@ -218,6 +222,7 @@ export default {
       return this.pagination.descending ? 'desc' : 'asc'
     },
     objectToSave () {
+
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
         .map(column => ({
@@ -231,16 +236,16 @@ export default {
     someSelected () {
       return this.selected.length > 0
     },
-    hasValidationErrors () {
-      return ''
-      //return Object.keys(this.fields).some(key => this.fields[key].invalid)
-    },
+
     isFormDirty () {
       return ''
       //return Object.keys(this.fields).some(key => this.fields[key].dirty)
     },
     hasCustomSelectedSlot () {
       return !!this.$slots['customSelected'] || !!this.$scopedSlots['customSelected']
+    },
+    fieldsWithValidation () {
+      return this.columns.filter(column => column.rules)
     }
   },
   watch: {
@@ -259,13 +264,16 @@ export default {
     }
   },
   methods: {
+    hasValidationErrors () {
+      return this.fieldsWithValidation.some(field => this.$refs[field.name][0].hasError)
+    },
     toggleModal () {
       this.resetColumnsValues()
       this.modalOpened = !this.modalOpened
     },
     toggleModalWithData () {
       this.populateColumnsWithSelectedRow()
-      this.$validator.reset()
+      //this.$validator.reset()
       this.modalOpened = !this.modalOpened
     },
     toggleConfirmDelete () {
@@ -316,6 +324,11 @@ export default {
         })
     },
     save () {
+      console.log(this.hasValidationErrors());
+      if (this.hasValidationErrors()) {
+        this.resetValitation()
+        return
+      }
       this.loading = true
       if (this.selected.length > 0) {
         this.put()
@@ -373,6 +386,9 @@ export default {
         }
         column.value = this.selected[0][column.name]
       })
+    },
+    resetValitation () {
+      this.fieldsWithValidation.forEach(field => this.$refs[field.name][0].validate())
     },
     resetColumnsValues () {
       this.columns.forEach(column => {
