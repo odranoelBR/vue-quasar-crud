@@ -7,10 +7,12 @@
       :columns.sync="columns"
       :http="axios"
       :can-edit="true"
+      :can-create="true"
+      :can-delete="true"
       :get-on-start="true"
-      search=""
-      :list-index="list => list"
-      api="mockend-api/posts"
+      :list-index="list => list.data"
+      api="api/users"
+      title="Emails"
       row-key="id"
     />
   </q-page>
@@ -22,17 +24,17 @@ import axios from 'axios'
 export default {
   components: { Crud },
   created () {
-    this.axios = axios.create({ baseURL: 'https://mockend.com/odranoelBR/' })
+    this.axios = axios.create({ baseURL: 'https://reqres.in/' })
   },
   data: () => ({
     axios: null,
     columns: [
       {
-        name: 'title',
+        name: 'first_name',
         required: true,
-        label: 'Title',
-        align: 'title',
-        field: 'title',
+        label: 'Name',
+        align: 'left',
+        field: 'first_name',
         sortable: true,
         type: 'QInput',
         value: '',
@@ -41,34 +43,16 @@ export default {
         showCreate: true
       },
       {
-        name: 'views',
+        name: 'email',
         required: true,
-        label: 'Views',
-        align: 'views',
-        field: 'views',
+        label: 'Email',
+        align: 'center',
+        field: 'email',
         sortable: true,
         type: 'QInput',
         static: true,
         value: '',
         size: '6',
-        showCreate: false
-      },
-      {
-        name: 'published',
-        required: true,
-        label: 'Published',
-        align: 'published',
-        field: 'published',
-        sortable: true,
-        type: 'QSelect',
-        value: '',
-        formatForPost: val => val.value,
-        options: [
-          { label: 'Yes', value: true },
-          { label: 'No', value: false }
-        ],
-        size: '6',
-        validate: 'required',
         showCreate: true
       }
     ]

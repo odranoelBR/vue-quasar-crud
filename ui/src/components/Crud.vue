@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-table
-      :data="dataByIndex"
+      :data="response"
       :columns="columns"
       :row-key="rowKey"
       :pagination.sync="pagination"
@@ -43,7 +43,7 @@
                 v-else
                 :key="column.name"
               >
-                {{ column.format? column.format(props.row[column.name]) : props.row[column.name] }}
+                {{ column.format ? column.format(props.row[column.name]) : props.row[column.name] }}
               </q-td>
             </template>
           </template>
@@ -51,7 +51,7 @@
       </template>
 
       <template v-slot:top-right>
-        <div class="row q-pa-sm">
+        <div class="row q-col-gutter-sm q-pa-sm">
           <div
             v-if="someSelected && hasCustomSelectedSlot"
             class="col"
@@ -126,14 +126,6 @@
                 filter
                 left-label
               />
-              <!-- :class="errors.has(column.name) ? 'text-negative' : 'text-positive'" -->
-
-              <!-- <span
-                v-show="errors.has(column.name)"
-                class="text-negative"
-              >
-                {{ errors.first(column.name) }}
-              </span> -->
             </div>
           </div>
         </q-card-section>
@@ -158,7 +150,7 @@
 </template>
 
 <script>
-import { QSelect, QInput, QOptionGroup, QToggle } from 'quasar'
+import { Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle } from 'quasar'
 
 export default {
   name: 'Crud',
@@ -181,11 +173,16 @@ export default {
     listIndex: { type: Function, required: true },
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
     msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
+    msgCreatedSucess: { type: [String, Function], default: 'Created!' },
     selectableRule: { type: Function, default: () => true },
     search: { type: String, default: '' },
     rowKey: { type: String, required: true },
-    rowsPerPage: { type: Number, default: 5 },
+    rowsPerPage: { type: Number, default: 3 },
     params: { type: String, default: '' },
+    paginationPageIndex: { type: String, default: 'page' },
+    paginationRowsPerPageIndex: { type: String, default: 'per_page' },
+    paginationSortIndex: { type: String, default: 'sort' },
+    paginationTotalIndex: { type: String, default: 'total' },
     title: { type: String, default: '' },
     visibleColumns: { type: Array, default: () => ([]) },
     titleDelete: { type: [String, Function], default: 'Delete' },
@@ -198,22 +195,18 @@ export default {
     response: [],
     pagination: {
       page: 0,
-      rowsPerPage: 10,
-      rowsNumber: 10,
+      rowsPerPage: 1,
+      rowsNumber: 1,
       descending: false,
-      sortBy: 'status'
+      sortBy: ''
     }
   }),
-  projection: { type: String, default: '' },
   computed: {
     showCustomVisibleColumns () {
       return this.visibleColumns.lenght > 0 ? this.visibleColumns.includes(column.name) : true
     },
     filteredColumns () {
       return this.columns.filter(column => column.showCreate)
-    },
-    dataByIndex () {
-      return this.listIndex(this.response)
     },
     apiUri () {
       return `${this.api}?page=${this.pagination.page}&size=${this.pagination.rowsPerPage}&sort=${this.pagination.sortBy},${this.sortDirection}`
@@ -273,11 +266,10 @@ export default {
     },
     toggleModalWithData () {
       this.populateColumnsWithSelectedRow()
-      //this.$validator.reset()
       this.modalOpened = !this.modalOpened
     },
     toggleConfirmDelete () {
-      this.$q.dialog({
+      Dialog.create({
         title: typeof this.titleDelete === 'function' ? this.titleDelete(this.selected[0]) : this.titleDelete,
         message: typeof this.msgDelete === 'function' ? this.msgDelete(this.selected[0]) : this.msgDelete,
         ok: 'Sim',
@@ -285,23 +277,23 @@ export default {
       }).onOk(() => {
         this.delete()
       }).onCancel(() => {
-        this.$q.notify('Ação cancelada...')
+        Notify.create('Ação cancelada...')
       })
     },
     get () {
       let page = Object.assign(this.pagination.page, '')
       let withSearch = this.search ? `${this.api}${this.search}?${this.params}&` : `${this.api}?`
       let url = withSearch +
-        `page=${--page}&` +
-        `size=${this.pagination.rowsPerPage}&` +
-        `sort=${this.pagination.sortBy},${this.sortDirection}&`
+        `${this.paginationPageIndex}=${page}&` +
+        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
 
       this.loading = true
       this.http.get(url)
         .then(response => {
-          this.response = response.data
-          //this.pagination.rowsNumber = response.data.page.totalElements
-          //this.pagination.rowsPerPage = response.data.page.size
+          this.response = this.listIndex(response.data)
+          this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex]
           this.loading = false
         })
         .catch(error => {
@@ -313,7 +305,7 @@ export default {
       this.loading = true
       this.http.delete(`${this.api}/${this.selected[0].id}`)
         .then(response => {
-          this.$q.notify({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
+          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.get()
           this.selected = []
           this.loading = false
@@ -324,7 +316,6 @@ export default {
         })
     },
     save () {
-      console.log(this.hasValidationErrors());
       if (this.hasValidationErrors()) {
         this.resetValitation()
         return
@@ -341,13 +332,13 @@ export default {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
           this.get()
-          this.$q.notify({ type: 'positive', message: 'Criado com sucesso!' })
+          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           this.loading = false
-          this.$emit('created', response.data)
+          this.$emit('created', response)
           this.toggleModal()
         })
         .catch(error => {
-          this.$emit('error', error)
+          Notify.create('error', error)
           this.loading = false
         })
     },
@@ -355,13 +346,14 @@ export default {
       this.http.put(`${this.api}/${this.selected[0].id}`, this.objectToSave)
         .then(response => {
           this.get()
-          this.$q.notify({ type: 'positive', message: 'Atualizado com sucesso!' })
+          Notify.create({ type: 'positive', message: 'Atualizado com sucesso!' })
           this.loading = false
-          this.$emit('updated', response.data)
+          this.$emit('updated', response)
           this.toggleModal()
         })
         .catch(error => {
-          this.$q.notify(error.response.data.errors)
+          console.log(error)
+          Notify.create(error)
           this.loading = false
         })
     },
