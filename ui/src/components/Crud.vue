@@ -174,6 +174,8 @@ export default {
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
     msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
     msgCreatedSucess: { type: [String, Function], default: 'Created!' },
+    msgUpdatedSucess: { type: [String, Function], default: 'Updated!' },
+    msgCanceledAction: { type: [String, Function], default: 'Canceled ...' },
     selectableRule: { type: Function, default: () => true },
     search: { type: String, default: '' },
     rowKey: { type: String, required: true },
@@ -229,11 +231,6 @@ export default {
     someSelected () {
       return this.selected.length > 0
     },
-
-    isFormDirty () {
-      return ''
-      //return Object.keys(this.fields).some(key => this.fields[key].dirty)
-    },
     hasCustomSelectedSlot () {
       return !!this.$slots['customSelected'] || !!this.$scopedSlots['customSelected']
     },
@@ -277,7 +274,7 @@ export default {
       }).onOk(() => {
         this.delete()
       }).onCancel(() => {
-        Notify.create('Ação cancelada...')
+        Notify.create(this.msgCanceledAction)
       })
     },
     get () {
@@ -346,7 +343,7 @@ export default {
       this.http.put(`${this.api}/${this.selected[0].id}`, this.objectToSave)
         .then(response => {
           this.get()
-          Notify.create({ type: 'positive', message: 'Atualizado com sucesso!' })
+          Notify.create({ type: 'positive', message: this.msgUpdatedSucess })
           this.loading = false
           this.$emit('updated', response)
           this.toggleModal()
