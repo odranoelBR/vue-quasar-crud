@@ -1,23 +1,23 @@
 import { version } from '../package.json'
 
-import Component from './components/Component'
+import Crud from './components/Crud.vue'
 
 
 export {
   version,
 
-  Component
-  
+  Crud
+
 }
 
 export default {
   version,
 
-  Component,
-  
+  Crud,
+
 
   install (Vue) {
-    Vue.component(Component.name, Component)
-    
+    Vue.component(Crud.name, Crud)
+
   }
 }

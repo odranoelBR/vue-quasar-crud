@@ -38,7 +38,7 @@ module.exports = function (ctx) {
       importStrategy: '',
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Notify', 'Dialog']
     },
 
     // animations: 'all', // --- includes all animations

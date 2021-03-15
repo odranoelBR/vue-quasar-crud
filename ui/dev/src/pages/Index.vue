@@ -1,38 +1,64 @@
 <template>
-  <q-page padding class="row justify-center">
-    <q-list dense class="list">
-      <div class="text-h4 q-mb-md">Test pages</div>
-      <q-item
-        v-for="page in pages"
-        :key="page.path"
-        :to="page.path"
-      >
-        <q-item-section avatar>
-          <q-icon name="pages" />
-        </q-item-section>
-        <q-item-section>
-          {{ page.title }}
-        </q-item-section>
-        <q-item-section side>
-          <q-icon name="chevron_right" />
-        </q-item-section>
-      </q-item>
-    </q-list>
+  <q-page
+    padding
+    class="row justify-center"
+  >
+    <crud
+      :columns.sync="columns"
+      :http="axios"
+      :can-edit="true"
+      :can-create="true"
+      :can-delete="true"
+      :get-on-start="true"
+      :list-index="list => list.data"
+      api="api/users"
+      title="Emails"
+      row-key="id"
+    />
   </q-page>
 </template>
 
 <script>
-import pages from '../router/pages'
-
+import Crud from '../../../src/components/Crud'
+import axios from 'axios'
 export default {
+  components: { Crud },
   created () {
-    this.pages = pages
-  }
+    this.axios = axios.create({ baseURL: 'https://reqres.in/' })
+  },
+  data: () => ({
+    axios: null,
+    columns: [
+      {
+        name: 'first_name',
+        required: true,
+        label: 'Name',
+        align: 'left',
+        field: 'first_name',
+        sortable: true,
+        type: 'QInput',
+        value: '',
+        size: '6',
+        rules: [val => val && val.length > 0 || 'Please type something'],
+        showCreate: true
+      },
+      {
+        name: 'email',
+        required: true,
+        label: 'Email',
+        align: 'center',
+        field: 'email',
+        sortable: true,
+        type: 'QInput',
+        static: true,
+        value: '',
+        size: '6',
+        showCreate: true
+      }
+    ]
+  })
 }
 </script>
 
 <style lang="sass" scoped>
-.list
-  width: 700px
-  max-width: 100%
 </style>
