@@ -23,10 +23,14 @@
   "bugs": "",
   "homepage": "",
   "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
     "@rollup/plugin-buble": "^0.20.0",
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-json": "^4.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^26.6.3",
     "chalk": "^4.1.0",
     "fs-extra": "^8.1.0",
     "open": "^7.3.0",
@@ -38,5 +42,19 @@
   },
   "browserslist": [
     "last 1 version, not dead, ie >= 11"
-  ]
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      ".*\\.(js)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@(.*)$": "<rootDir>/src/$1"
+    }
+  }
 }
