@@ -1,0 +1,13 @@
+version: "3.3"
+
+services: 
+  my_app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - C:\Users\Leo\Documents\Projetos\vue-quasar-crud:/app
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
