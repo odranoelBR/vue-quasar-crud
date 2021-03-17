@@ -8,6 +8,7 @@
   "main": "dist/index.common.js",
   "scripts": {
     "dev": "cd dev && yarn dev && cd ..",
+    "test:unit": "jest",
     "dev:umd": "yarn build && node build/script.open-umd.js",
     "dev:ssr": "cd dev && yarn 'dev:ssr' && cd ..",
     "dev:ios": "cd dev && yarn 'dev:ios' && cd ..",
@@ -29,6 +30,7 @@
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-json": "^4.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
+    "axios": "^0.21.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^26.6.3",
     "chalk": "^4.1.0",
@@ -43,6 +45,11 @@
   "browserslist": [
     "last 1 version, not dead, ie >= 11"
   ],
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -51,10 +58,17 @@
     ],
     "transform": {
       ".*\\.(vue)$": "vue-jest",
-      ".*\\.(js)$": "babel-jest"
+      "^.+\\.(js|jsx)?$": "babel-jest"
     },
     "moduleNameMapper": {
-      "^@(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1"
     }
+  },
+  "dependencies": {
+    "@vue/test-utils": "^1.1.3",
+    "jest": "^26.6.3",
+    "vue": "^2.6.12",
+    "vue-jest": "^3.0.7",
+    "vue-template-compiler": "^2.6.12"
   }
 }

@@ -11,6 +11,7 @@
       :can-delete="true"
       :get-on-start="true"
       :list-index="list => list.data"
+      :visible-columns="['email']"
       api="api/users"
       title="Emails"
       row-key="id"

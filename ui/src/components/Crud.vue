@@ -29,23 +29,21 @@
           </q-td>
 
           <template v-for="column in columns">
-            <template v-if="showCustomVisibleColumns">
-              <q-td
-                v-if="column.customize"
-                :key="column.name"
-              >
-                <slot
-                  :row="props.row"
-                  :name="column.name"
-                />
-              </q-td>
-              <q-td
-                v-else
-                :key="column.name"
-              >
-                {{ column.format ? column.format(props.row[column.name]) : props.row[column.name] }}
-              </q-td>
-            </template>
+            <q-td
+              v-if="column.customize"
+              :key="column.name"
+            >
+              <slot
+                :row="props.row"
+                :name="column.name"
+              />
+            </q-td>
+            <q-td
+              v-else
+              :key="column.name"
+            >
+              {{ column.format ? column.format(props.row[column.name]) : props.row[column.name] }}
+            </q-td>
           </template>
         </q-tr>
       </template>
@@ -150,12 +148,16 @@
 </template>
 
 <script>
-import { Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle } from 'quasar'
+import {
+  Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
+  QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
+} from 'quasar'
 
 export default {
   name: 'Crud',
   components: {
-    QSelect, QInput, QOptionGroup, QToggle
+    Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
+    QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
   },
   props: {
     api: { type: String, required: true },
@@ -204,9 +206,6 @@ export default {
     }
   }),
   computed: {
-    showCustomVisibleColumns () {
-      return this.visibleColumns.lenght > 0 ? this.visibleColumns.includes(column.name) : true
-    },
     filteredColumns () {
       return this.columns.filter(column => column.showCreate)
     },
