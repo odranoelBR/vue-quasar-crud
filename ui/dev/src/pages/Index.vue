@@ -3,19 +3,29 @@
     padding
     class="row justify-center"
   >
-    <crud
-      :columns.sync="columns"
-      :http="axios"
-      :can-edit="true"
-      :can-create="true"
-      :can-delete="true"
-      :get-on-start="true"
-      :list-index="list => list.data"
-      :visible-columns="['email']"
-      api="api/users"
-      title="Emails"
-      row-key="id"
-    />
+    <div class="row q-col-gutter-xs fit jusfity-around">
+      <div class="col">
+        <crud
+          :columns.sync="columns"
+          :http="axios"
+          :can-edit="true"
+          :can-create="true"
+          :can-delete="true"
+          :get-on-start="true"
+          :list-index="list => list.data"
+          :visible-columns="['email']"
+          api="api/users"
+          title="Emails"
+          row-key="id"
+        />
+      </div>
+      <div class="col">
+        <code class="language-html">
+
+        </code>
+
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -29,6 +39,7 @@ export default {
   },
   data: () => ({
     axios: null,
+    code: '',
     columns: [
       {
         name: 'first_name',
