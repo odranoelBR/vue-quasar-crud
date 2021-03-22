@@ -216,9 +216,9 @@ export default {
       return this.pagination.descending ? 'desc' : 'asc'
     },
     objectToSave () {
-
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
+        .map(column => this.validateFormatFunctionForColumn(column))
         .map(column => ({
           [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
         }))
@@ -399,6 +399,12 @@ export default {
         }
       }
       )
+    },
+    validateFormatFunctionForColumn (column) {
+      if (column.formatForPost && typeof column.formatForPost !== 'function') {
+        throw new Error(`formatForPost must be function on column ${column.name}`)
+      }
+      return column
     },
     selectableRuleDefault (row) {
       return !!row

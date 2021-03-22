@@ -22,10 +22,11 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
-    "core-js": "^3.0.0"
+    "core-js": "^3.0.0",
+    "prismjs": "^1.23.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0",
+    "@quasar/app": "^2.2.2",
     "eslint-plugin-jest": "^24.1.0"
   },
   "browserslist": [

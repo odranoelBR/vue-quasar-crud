@@ -20,9 +20,7 @@
         />
       </div>
       <div class="col">
-        <code class="language-html">
-
-        </code>
+        <p v-html="code"></p>
 
       </div>
     </div>
@@ -32,6 +30,8 @@
 <script>
 import Crud from '../../../src/components/Crud'
 import axios from 'axios'
+import Prism from 'prismjs'
+
 export default {
   components: { Crud },
   created () {
@@ -39,7 +39,19 @@ export default {
   },
   data: () => ({
     axios: null,
-    code: '',
+    code: Prism.highlight(`<crud
+            :columns.sync="columns"
+            :http="axios"
+            :can-edit="true"
+            :can-create="true"
+            :can-delete="true"
+            :get-on-start="true"
+            :list-index="list => list.data"
+            :visible-columns="['email']"
+            api="api/users"
+            title="Emails"
+            row-key="id"
+          />`, Prism.languages.html),
     columns: [
       {
         name: 'first_name',
