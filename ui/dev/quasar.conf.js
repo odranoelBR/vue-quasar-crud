@@ -35,7 +35,7 @@ module.exports = function (ctx) {
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
       // * 'all'  - Manually specify what to import
-      importStrategy: '',
+      importStrategy: 'auto',
 
       // Quasar plugins
       plugins: ['Notify', 'Dialog']

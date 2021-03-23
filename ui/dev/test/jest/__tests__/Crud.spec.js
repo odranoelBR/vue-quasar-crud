@@ -1,5 +1,5 @@
 import { mountQuasar } from '../index'
-import Crud from '@/components/Crud.vue'
+import Crud from '../../../../src/components/Crud'
 import axios from 'axios'
 import columns from './columns.js'
 jest.mock('axios');
