@@ -3,28 +3,70 @@
     padding
     class="row justify-center"
   >
-    <div class="row q-col-gutter-xs fit jusfity-around">
-      <div class="col">
-        <crud
-          :columns.sync="columns"
-          :http="axios"
-          :can-edit="true"
-          :can-create="true"
-          :can-delete="true"
-          :get-on-start="true"
-          :list-index="list => list.data"
-          :visible-columns="['email']"
-          api="api/users"
-          title="Emails"
-          row-key="id"
+    <div>
+      <q-tabs
+        v-model="tab"
+        align="justify"
+        narrow-indicator
+        class="bg-grey-2 text-teal"
+      >
+        <q-tab
+          class="text-purple"
+          name="mails"
+          label="Example"
         />
-      </div>
-      <div class="col">
-        <!-- <highlightjs
-          autodetect
-          :code="code"
-        /> -->
+        <q-tab
+          class="text-orange"
+          name="alarms"
+          label="Template"
+        />
+        <q-tab
+          class="text-teal"
+          name="movies"
+          label="Script"
+        />
+      </q-tabs>
+      <div>
+        <q-tab-panels
+          keep-alive
+          v-model="tab"
+          animated
+          transition-prev="scale"
+          transition-next="scale"
+        >
+          <q-tab-panel
+            name="mails"
+            ref="panel"
+          >
+            <crud
+              :columns.sync="columns"
+              :http="axios"
+              :can-edit="true"
+              :can-create="true"
+              :can-delete="true"
+              :get-on-start="true"
+              :list-index="list => list.data"
+              :visible-columns="['email']"
+              api="api/users"
+              title="Emails"
+              row-key="id"
+            />
+          </q-tab-panel>
 
+          <q-tab-panel name="alarms">
+            <highlightjs
+              language="htmlbars"
+              :code="code"
+            />
+          </q-tab-panel>
+
+          <q-tab-panel name="movies">
+            <highlightjs
+              language="javascript"
+              :code="columnsString"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
       </div>
     </div>
   </q-page>
@@ -32,28 +74,32 @@
 
 <script>
 import Crud from '../../../src/components/Crud'
+
 import axios from 'axios'
 
 export default {
-  components: { Crud },
+  components: {
+    Crud
+  },
   created () {
     this.axios = axios.create({ baseURL: 'https://reqres.in/' })
   },
   data: () => ({
+    tab: 'mails',
     axios: null,
-    // code: Prism.highlight(`<crud
-    //         :columns.sync="columns"
-    //         :http="axios"
-    //         :can-edit="true"
-    //         :can-create="true"
-    //         :can-delete="true"
-    //         :get-on-start="true"
-    //         :list-index="list => list.data"
-    //         :visible-columns="['email']"
-    //         api="api/users"
-    //         title="Emails"
-    //         row-key="id"
-    //       />`, Prism.languages.html),
+    code: `<crud
+ :columns.sync="columns"
+ :http="axios"
+ :can-edit="true"
+ :can-create="true"
+ :can-delete="true"
+ :get-on-start="true"
+ :list-index="list => list.data"
+ :visible-columns="['email']"
+ api="api/users"
+ title="Emails"
+ row-key="id"
+/>`,
     columns: [
       {
         name: 'first_name',
@@ -82,9 +128,16 @@ export default {
         showCreate: true
       }
     ]
-  })
+  }),
+  computed: {
+    columnsString () {
+      return 'columns: ' + JSON.stringify(this.columns, null, 2)
+    }
+  }
 }
 </script>
 
 <style lang="sass" scoped>
+.q-tab-panel
+  padding: 0px
 </style>
