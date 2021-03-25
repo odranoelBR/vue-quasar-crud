@@ -16,6 +16,7 @@
 
         <div>Quasar v{{ $q.version }}</div>
         <a
+          target="_blank"
           href="https://github.com/odranoelBR/vue-quasar-crud"
           class="text-white q-pa-sm"
         >

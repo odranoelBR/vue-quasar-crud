@@ -132,5 +132,5 @@ export default {
 
 <style lang="sass" scoped>
 .q-tab-panel
-    padding: 0px
+  padding: 0px
 </style>

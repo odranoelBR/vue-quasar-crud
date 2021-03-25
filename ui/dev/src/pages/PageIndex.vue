@@ -3,7 +3,7 @@
     padding
     class="row justify-center"
   >
-    <div>
+    <div class="col-8 ">
       <q-markdown
         :src="markdown"
         toc

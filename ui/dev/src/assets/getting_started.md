@@ -14,8 +14,12 @@ quasar ext remove crud //uninstall
 ```
 
 **OR**:
-
 Create and register a boot file:
+
+```js
+npm i quasar-app-extension-crud
+```
+
 ```js
 import Vue from 'vue'
 import Plugin from '@quasar/quasar-app-extension-crud'
