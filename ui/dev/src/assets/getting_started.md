@@ -17,7 +17,8 @@ quasar ext remove crud //uninstall
 Create and register a boot file:
 
 ```js
-npm i quasar-app-extension-crud
+npm i quasar-app-extension-crud 
+yar add quasar-app-extension-crud 
 ```
 
 ```js
@@ -26,10 +27,6 @@ import Plugin from '@quasar/quasar-app-extension-crud'
 
 Vue.use(Plugin)
 ```
-
-## Infos
-* Using Quasar default quasar extesion template
-* You must supply axios dependency
 
 ## Demo
 

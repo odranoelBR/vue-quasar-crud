@@ -37,12 +37,7 @@
         <crud
           :columns.sync="columns"
           :http="axios"
-          :can-edit="true"
-          :can-create="true"
-          :can-delete="true"
-          :get-on-start="true"
           :list-index="list => list.data"
-          :visible-columns="['email']"
           api="api/users"
           title="Emails"
           row-key="id"
@@ -83,12 +78,7 @@ export default {
     code: `<crud
  :columns.sync="columns"
  :http="axios"
- :can-edit="true"
- :can-create="true"
- :can-delete="true"
- :get-on-start="true"
  :list-index="list => list.data"
- :visible-columns="['email']"
  api="api/users"
  title="Emails"
  row-key="id"
@@ -124,7 +114,9 @@ export default {
   }),
   computed: {
     columnsString () {
-      return 'columns: ' + JSON.stringify(this.columns, null, 2)
+      let columns = JSON.parse(JSON.stringify(this.columns))
+      columns[0].rules = '[val => val && val.length > 0 || "Please type something"]'
+      return 'columns: ' + JSON.stringify(columns, null, 2)
     }
   }
 }
