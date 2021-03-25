@@ -1,5 +1,5 @@
 <template>
-  <div class="fit">
+  <div>
     <q-tabs
       v-model="tab"
       align="justify"

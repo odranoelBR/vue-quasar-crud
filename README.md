@@ -22,6 +22,7 @@ Coming...
 
 ## Infos
 * Using Quasar default quasar extesion template
+* You must supply axios dependency
 
 ## External Dependecies 
 * [Axios.js](https://github.com/mzabriskie/axios) as HTTP client 

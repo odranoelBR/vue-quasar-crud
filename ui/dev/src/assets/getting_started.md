@@ -25,6 +25,8 @@ Vue.use(Plugin)
 
 ## Infos
 * Using Quasar default quasar extesion template
+* You must supply axios dependency
 
+## Demo
 
 
