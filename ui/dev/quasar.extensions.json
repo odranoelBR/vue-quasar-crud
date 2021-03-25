@@ -5,5 +5,9 @@
       "scripts",
       "SFC"
     ]
+  },
+  "@quasar/qmarkdown": {
+    "import_md": true,
+    "import_vmd": true
   }
 }
