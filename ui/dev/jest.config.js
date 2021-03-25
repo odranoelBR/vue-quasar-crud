@@ -37,7 +37,7 @@ module.exports = {
   ],
   moduleFileExtensions: ['vue', 'js', 'jsx', 'json'],
   moduleNameMapper: {
-    '^vue$': 'vue/dist/vue.common.js',
+    '^vue$': '<rootDir>/node_modules/vue/dist/vue.common.js',
     '^test-utils$': '@vue/test-utils/dist/vue-test-utils.js',
     '^quasar$': 'quasar/dist/quasar.common.js',
     '^~/(.*)$': '<rootDir>/$1',
@@ -53,6 +53,8 @@ module.exports = {
     // '.*\\.vue$': '@quasar/quasar-app-extension-testing-unit-jest/node_modules/vue-jest',
     // '.*\\.js$': '@quasar/quasar-app-extension-testing-unit-jest/node_modules/babel-jest'
   },
-  transformIgnorePatterns: [`node_modules/(?!(${esModules}))`],
+  transformIgnorePatterns: [
+    `node_modules/(?!(${esModules}))`,
+  ],
   snapshotSerializers: ['jest-serializer-vue'],
 };
