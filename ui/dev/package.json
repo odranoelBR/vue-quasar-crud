@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
+    "@quasar/quasar-app-extension-qmarkdown": "^1.4.1",
     "@quasar/quasar-app-extension-testing-unit-jest": "^2.2.1",
     "eslint-plugin-jest": "^24.1.0"
   },

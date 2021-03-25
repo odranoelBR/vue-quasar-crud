@@ -47,17 +47,22 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'history',
+      extendWebpack (cfg, { isServer, isClient }) {
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias, // This adds the existing alias
 
+          // Add your own alias like this
+          '@components': path.resolve(__dirname, './src/components')
+        }
+      },
       chainWebpack (chain) {
         chain.resolve.alias.merge({
           'ui': path.resolve(__dirname, '../src/index.js')
         })
-      }
+      },
     },
 
     devServer: {
-      // port: 8080,
-      open: false // opens browser window automatically
     }
   }
 }
