@@ -17,7 +17,7 @@ module.exports = function (ctx) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v5',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
@@ -35,7 +35,7 @@ module.exports = function (ctx) {
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
       // * 'all'  - Manually specify what to import
-      importStrategy: '',
+      importStrategy: 'auto',
 
       // Quasar plugins
       plugins: ['Notify', 'Dialog']
@@ -47,17 +47,22 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'history',
+      extendWebpack (cfg, { isServer, isClient }) {
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias, // This adds the existing alias
 
+          // Add your own alias like this
+          '@components': path.resolve(__dirname, './src/components')
+        }
+      },
       chainWebpack (chain) {
         chain.resolve.alias.merge({
           'ui': path.resolve(__dirname, '../src/index.js')
         })
-      }
+      },
     },
 
     devServer: {
-      // port: 8080,
-      open: true // opens browser window automatically
     }
   }
 }

@@ -1,13 +1,13 @@
-# Quasar App Extension quasar-crud
+# Quasar App Extension crud
 
 > Add a short description of your App Extension. What does it do? How is it beneficial? Why would someone want to use it?
 
-[![npm](https://img.shields.io/npm/v/quasar-app-extension-quasar-crud.svg?label=quasar-app-extension-quasar-crud)](https://www.npmjs.com/package/quasar-app-extension-quasar-crud)
-[![npm](https://img.shields.io/npm/dt/quasar-app-extension-quasar-crud.svg)](https://www.npmjs.com/package/quasar-app-extension-quasar-crud)
+[![npm](https://img.shields.io/npm/v/quasar-app-extension-crud.svg?label=quasar-app-extension-crud)](https://www.npmjs.com/package/quasar-app-extension-crud)
+[![npm](https://img.shields.io/npm/dt/quasar-app-extension-crud.svg)](https://www.npmjs.com/package/quasar-app-extension-crud)
 
 # Install
 ```bash
-quasar ext add quasar-crud
+quasar ext add crud
 ```
 Quasar CLI will retrieve it from NPM and install the extension.
 
@@ -17,7 +17,7 @@ Quasar CLI will retrieve it from NPM and install the extension.
 
 # Uninstall
 ```bash
-quasar ext remove quasar-crud
+quasar ext remove crud
 ```
 
 # Info

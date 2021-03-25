@@ -9,15 +9,26 @@
     "dev:ssr": "quasar dev -m ssr",
     "dev:ios": "quasar dev -m ios",
     "dev:android": "quasar dev -m android",
-    "dev:electron": "quasar dev -m electron"
+    "dev:electron": "quasar dev -m electron",
+    "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
+    "test:unit": "jest --updateSnapshot --runInBand",
+    "test:unit:ci": "jest --ci",
+    "test:unit:coverage": "jest --coverage",
+    "test:unit:watch": "jest --watch",
+    "test:unit:watchAll": "jest --watchAll",
+    "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
+    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
-    "axios": "^0.21.1",
-    "core-js": "^3.0.0"
+    "core-js": "^3.0.0",
+    "highlight.js": "^10.7.1"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0"
+    "@quasar/app": "^2.0.0",
+    "@quasar/quasar-app-extension-qmarkdown": "^1.4.1",
+    "@quasar/quasar-app-extension-testing-unit-jest": "^2.2.1",
+    "eslint-plugin-jest": "^24.1.0"
   },
   "browserslist": [
     "last 10 Chrome versions",

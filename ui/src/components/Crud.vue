@@ -29,23 +29,21 @@
           </q-td>
 
           <template v-for="column in columns">
-            <template v-if="showCustomVisibleColumns">
-              <q-td
-                v-if="column.customize"
-                :key="column.name"
-              >
-                <slot
-                  :row="props.row"
-                  :name="column.name"
-                />
-              </q-td>
-              <q-td
-                v-else
-                :key="column.name"
-              >
-                {{ column.format ? column.format(props.row[column.name]) : props.row[column.name] }}
-              </q-td>
-            </template>
+            <q-td
+              v-if="column.customize"
+              :key="column.name"
+            >
+              <slot
+                :row="props.row"
+                :name="column.name"
+              />
+            </q-td>
+            <q-td
+              v-else
+              :key="column.name"
+            >
+              {{ column.format ? column.format(props.row[column.name]) : props.row[column.name] }}
+            </q-td>
           </template>
         </q-tr>
       </template>
@@ -150,20 +148,24 @@
 </template>
 
 <script>
-import { Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle } from 'quasar'
+import {
+  Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
+  QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
+} from 'quasar'
 
 export default {
   name: 'Crud',
   components: {
-    QSelect, QInput, QOptionGroup, QToggle
+    Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
+    QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
   },
   props: {
     api: { type: String, required: true },
     columns: { type: Array, required: true },
     createRule: { type: Boolean, default: true },
-    canCreate: { type: Boolean, default: false },
-    canDelete: { type: Boolean, default: false },
-    canEdit: { type: Boolean, default: false },
+    canCreate: { type: Boolean, default: true },
+    canDelete: { type: Boolean, default: true },
+    canEdit: { type: Boolean, default: true },
     http: { type: Function, required: true },
     iconDelete: { type: [String, Function], default: 'delete' },
     iconDeleteColor: { type: [String, Function], default: 'negative' },
@@ -204,9 +206,6 @@ export default {
     }
   }),
   computed: {
-    showCustomVisibleColumns () {
-      return this.visibleColumns.lenght > 0 ? this.visibleColumns.includes(column.name) : true
-    },
     filteredColumns () {
       return this.columns.filter(column => column.showCreate)
     },
@@ -217,9 +216,9 @@ export default {
       return this.pagination.descending ? 'desc' : 'asc'
     },
     objectToSave () {
-
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
+        .map(column => this.validateFormatFunctionForColumn(column))
         .map(column => ({
           [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
         }))
@@ -400,6 +399,12 @@ export default {
         }
       }
       )
+    },
+    validateFormatFunctionForColumn (column) {
+      if (column.formatForPost && typeof column.formatForPost !== 'function') {
+        throw new Error(`formatForPost must be function on column ${column.name}`)
+      }
+      return column
     },
     selectableRuleDefault (row) {
       return !!row
