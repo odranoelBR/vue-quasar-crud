@@ -22,7 +22,8 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.0.0",
-    "highlight.js": "^10.7.1"
+    "highlight.js": "^10.7.1",
+    "markdown-loader": "^6.0.0"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",

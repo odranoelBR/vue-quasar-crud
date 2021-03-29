@@ -98,7 +98,7 @@
     >
       <q-card>
         <q-card-section class="bg-primary text-white">
-          {{ itemName }}
+          {{ modalTextTitle }}
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -148,6 +148,9 @@
 </template>
 
 <script>
+/**
+   * The only true CRUD Table.
+   */
 import {
   Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
   QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
@@ -160,35 +163,90 @@ export default {
     QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
   },
   props: {
+    /** The rest API endpoint */
     api: { type: String, required: true },
+    /** The Quasar Columns config 
+     * @link https://quasar.dev/vue-components/table#defining-the-columns
+     */
     columns: { type: Array, required: true },
+    /**  */
     createRule: { type: Boolean, default: true },
+    /** Enable / Disable POST http creation of resource */
     canCreate: { type: Boolean, default: true },
+    /** Enable / Disable DELETE http deletion of resource */
     canDelete: { type: Boolean, default: true },
+    /** Enable / Disable PUT http edit of resource */
     canEdit: { type: Boolean, default: true },
+    /** The Axios instance
+     *  @example axios.create({ baseURL: 'https://reqres.in/' })
+     */
     http: { type: Function, required: true },
+    /** The icon of delete button 
+     * @link https://quasar.dev/vue-components/button#with-icon
+     */
     iconDelete: { type: [String, Function], default: 'delete' },
+    /** The color of delete button */
     iconDeleteColor: { type: [String, Function], default: 'negative' },
-    itemName: { type: String, default: '' },
+    /** The text of title on modal (edit / create) */
+    modalTextTitle: { type: String, default: '' },
+    /** The component will fetch remote data on mounted hook */
     getOnStart: { type: Boolean, default: true },
+    /** The component will fetch remote data on params props change */
     getOnParamChange: { type: Boolean, default: false },
+    /** The function that will filter the data from the axios response 
+     * @example axios response from the server 
+     * { data: { people: [..., ...]}, status: 200, headers: {} ... }
+     * So a function can be list => list.people
+     * @link https://github.com/axios/axios#response-schema
+     */
     listIndex: { type: Function, required: true },
+    /** The message on dialog to confirm deletation */
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
+    /** The message on notification of succesfull delete */
     msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
+    /** The message on notification of succesfull create */
     msgCreatedSucess: { type: [String, Function], default: 'Created!' },
+    /** The message on notification of succesfull update */
     msgUpdatedSucess: { type: [String, Function], default: 'Updated!' },
+    /** The message on dialog of canceled action */
     msgCanceledAction: { type: [String, Function], default: 'Canceled ...' },
+    /** The function to allow user select the row 
+     * @example selectableRule (row) { return row.status === 'ACTIVE' }
+     */
     selectableRule: { type: Function, default: () => true },
-    search: { type: String, default: '' },
+    /** The index of rows (id) */
     rowKey: { type: String, required: true },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     rowsPerPage: { type: Number, default: 3 },
+    /** Query params of the url
+     * @link https://en.wikipedia.org/wiki/Query_string
+     */
     params: { type: String, default: '' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationPageIndex: { type: String, default: 'page' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationRowsPerPageIndex: { type: String, default: 'per_page' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationSortIndex: { type: String, default: 'sort' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationTotalIndex: { type: String, default: 'total' },
+    /** The title of table */
     title: { type: String, default: '' },
+    /** The quasar table visible columns 
+     * @link https://quasar.dev/vue-components/table#visible-columns-custom-top-fullscreen
+     */
     visibleColumns: { type: Array, default: () => ([]) },
+    /** The title of modal delete */
     titleDelete: { type: [String, Function], default: 'Delete' },
   },
   data: () => ({
@@ -278,8 +336,8 @@ export default {
     },
     get () {
       let page = Object.assign(this.pagination.page, '')
-      let withSearch = this.search ? `${this.api}${this.search}?${this.params}&` : `${this.api}?`
-      let url = withSearch +
+      let withParams = this.params ? `${this.api}?${this.params}&` : `${this.api}?`
+      let url = withParams +
         `${this.paginationPageIndex}=${page}&` +
         `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
         `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
