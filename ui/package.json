@@ -8,6 +8,7 @@
   "main": "dist/index.common.js",
   "scripts": {
     "dev": "cd dev && yarn dev && cd ..",
+    "docgen": "yarn vue-docgen src/components/**/*.vue .",
     "test:unit": "jest --maxWorkers=4",
     "dev:umd": "yarn build && node build/script.open-umd.js",
     "dev:ssr": "cd dev && yarn 'dev:ssr' && cd ..",
@@ -44,6 +45,7 @@
     "rtlcss": "^2.6.1",
     "sass": "^1.29.0",
     "uglify-es": "^3.3.9",
+    "vue-docgen-cli": "^4.36.1",
     "zlib": "^1.0.5"
   },
   "browserslist": [
