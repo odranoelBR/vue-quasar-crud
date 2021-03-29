@@ -150,6 +150,7 @@
 <script>
 /**
    * The only true CRUD Table.
+   * @display API
    */
 import {
   Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
@@ -351,6 +352,9 @@ export default {
           this.loading = false
         })
         .catch(error => {
+          /**
+           *  Emit the ERROR Object of axios catch.
+           */
           this.$emit('error', error)
           this.loading = false
         })
@@ -365,6 +369,9 @@ export default {
           this.loading = false
         })
         .catch(error => {
+          /**
+           *  Emit the ERROR Object of axios catch.
+           */
           this.$emit('error', error)
           this.loading = false
         })
@@ -388,6 +395,9 @@ export default {
           this.get()
           Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           this.loading = false
+          /**
+           *  Emit the response Object of axios on sucefull created request.
+           */
           this.$emit('created', response)
           this.toggleModal()
         })
@@ -402,6 +412,9 @@ export default {
           this.get()
           Notify.create({ type: 'positive', message: this.msgUpdatedSucess })
           this.loading = false
+          /**
+           *  Emit the response Object of axios on sucefull updated request.
+           */
           this.$emit('updated', response)
           this.toggleModal()
         })

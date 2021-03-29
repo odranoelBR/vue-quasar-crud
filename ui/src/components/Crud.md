@@ -36,11 +36,11 @@
 
 ## Events
 
-| Event name | Properties | Description |
-| ---------- | ---------- | ----------- |
-| error      |            |
-| created    |            |
-| updated    |            |
+| Event name | Properties | Description                                                    |
+| ---------- | ---------- | -------------------------------------------------------------- |
+| error      |            | Emit the ERROR Object of axios catch.                          |
+| created    |            | Emit the response Object of axios on sucefull created request. |
+| updated    |            | Emit the response Object of axios on sucefull updated request. |
 
 ## Slots
 

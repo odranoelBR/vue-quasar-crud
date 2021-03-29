@@ -12,7 +12,7 @@
   "bugs": "",
   "homepage": "",
   "dependencies": {
-    "quasar-ui-crud": "latest"
+    "quasar-ui-crud": "^0.0.2"
   },
   "engines": {
     "node": ">= 8.9.0",
