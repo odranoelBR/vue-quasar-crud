@@ -3,14 +3,8 @@
     <q-table
       ref="table"
       :data="response"
-      :columns="columns"
-      :row-key="rowKey"
-      :pagination.sync="pagination"
       :selection="selectionMode"
-      :visible-columns="visibleColumns"
-      :selected.sync="selected"
-      :loading="loading"
-      v-bind="{ title, loading}"
+      v-bind="$props"
       @request="request"
     >
       <template
@@ -157,6 +151,13 @@ import {
   QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
 } from 'quasar'
 
+let qTableProps = JSON.parse(JSON.stringify(QTable.options.props))
+delete qTableProps.data
+delete qTableProps.pagination
+delete qTableProps.selection
+delete qTableProps.selected
+delete qTableProps.loading
+
 export default {
   name: 'Crud',
   components: {
@@ -164,13 +165,12 @@ export default {
     QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
   },
   props: {
+    ...qTableProps,
     /** The rest API endpoint */
     api: { type: String, required: true },
     /** The Quasar Columns config 
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
-    columns: { type: Array, required: true },
-    /**  */
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
     canCreate: { type: Boolean, default: true },
@@ -241,12 +241,6 @@ export default {
      * @link https://quasar.dev/vue-components/table#pagination
      */
     paginationTotalIndex: { type: String, default: 'total' },
-    /** The title of table */
-    title: { type: String, default: '' },
-    /** The quasar table visible columns 
-     * @link https://quasar.dev/vue-components/table#visible-columns-custom-top-fullscreen
-     */
-    visibleColumns: { type: Array, default: () => ([]) },
     /** The title of modal delete */
     titleDelete: { type: [String, Function], default: 'Delete' },
   },
@@ -257,7 +251,7 @@ export default {
     selected: [],
     response: [],
     pagination: {
-      page: 0,
+      page: 1,
       rowsPerPage: 1,
       rowsNumber: 1,
       descending: false,
@@ -269,7 +263,7 @@ export default {
       return this.columns.filter(column => column.showCreate)
     },
     apiUri () {
-      return `${this.api}?page=${this.pagination.page}&size=${this.pagination.rowsPerPage}&sort=${this.pagination.sortBy},${this.sortDirection}`
+      return `${this.api}?${this.paginationPageIndex}=${this.pagination.page}&${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -303,8 +297,10 @@ export default {
       }
     }
   },
+  beforeCreate () {
+
+  },
   created () {
-    console.log(QTable)
     this.pagination.rowsPerPage = this.rowsPerPage
   },
   mounted () {
@@ -348,8 +344,14 @@ export default {
       this.http.get(url)
         .then(response => {
           this.response = this.listIndex(response.data)
-          this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex]
+          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
+          if (response.data[this.paginationTotalIndex]) {
+            this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+          } else {
+            delete this.pagination.rowsNumber
+            this.$refs.table.setPagination(this.pagination)
+          }
+
           this.loading = false
         })
         .catch(error => {
@@ -426,11 +428,7 @@ export default {
         })
     },
     request ({ pagination, filter }) {
-      this.pagination.rowsPerPage = pagination.rowsPerPage
-      this.pagination.sortBy = pagination.sortBy
-      this.pagination.rowsNumber = pagination.rowsNumber
-      this.pagination.page = pagination.page
-      this.pagination.descending = pagination.descending
+      this.pagination = pagination
 
       if (pagination.rowsPerPage === 0) {
         this.pagination.rowsPerPage = 200

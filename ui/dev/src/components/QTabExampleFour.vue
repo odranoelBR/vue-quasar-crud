@@ -34,42 +34,12 @@
         name="example"
         ref="panel"
       >
-        <fieldset class="text-blue">
-          <legend>Filter form</legend>
-          <div class="row justify-between q-col-gutter-sm">
-
-            <div class="col-4">
-              <q-select
-                v-model="completed"
-                emit-value
-                map-options
-                label="Choose task status"
-                :options="options"
-              />
-            </div>
-            <div class="col-4">
-              <q-btn
-                color="warning"
-                @click="reset"
-              >
-                Reset
-              </q-btn>
-            </div>
-          </div>
-        </fieldset>
-
         <crud
-          v-if="alive"
           :columns.sync="columns"
           :http="axios"
-          :list-index="list => list"
-          :can-create="false"
-          :can-edit="false"
-          :get-on-start="false"
-          :get-on-param-change="true"
-          :params="`completed=${completed}`"
-          api="todos"
-          title="Tasks"
+          :list-index="list => list.data"
+          api="api/users"
+          title="Emails"
           row-key="id"
         />
       </q-tab-panel>
@@ -100,53 +70,43 @@ export default {
     Crud
   },
   created () {
-    this.axios = axios.create({ baseURL: 'https://jsonplaceholder.typicode.com/' })
+    this.axios = axios.create({ baseURL: 'https://reqres.in/' })
   },
   data: () => ({
-    alive: true,
-    completed: null,
-    options: [
-      { label: 'Yes', value: true },
-      { label: 'No', value: false }
-    ],
     tab: 'example',
     axios: null,
     code: `<crud
  :columns.sync="columns"
  :http="axios"
  :list-index="list => list.data"
- :can-create="false"
- :can-edit="false"
- :get-on-start="false"
- :get-on-param-change="true"
- :params="\`completed=\${completed}\`"
  api="api/users"
  title="Emails"
  row-key="id"
 />`,
     columns: [
       {
-        name: 'title',
+        name: 'first_name',
         required: true,
-        label: 'Title',
+        label: 'Name',
         align: 'left',
-        field: 'title',
+        field: 'first_name',
         sortable: true,
         type: 'QInput',
         value: '',
+        size: '6',
         rules: [val => val && val.length > 0 || 'Please type something'],
         showCreate: true
       },
       {
-        name: 'completed',
+        name: 'email',
         required: true,
-        label: 'Done ?',
-        align: 'completed',
-        field: 'title',
+        label: 'Email',
+        align: 'center',
+        field: 'email',
         sortable: true,
         type: 'QInput',
         value: '',
-        rules: [val => val && val.length > 0 || 'Please type something'],
+        size: '6',
         showCreate: true
       }
     ]
@@ -156,16 +116,6 @@ export default {
       let columns = JSON.parse(JSON.stringify(this.columns))
       columns[0].rules = '[val => val && val.length > 0 || "Please type something"]'
       return 'columns: ' + JSON.stringify(columns, null, 2)
-    }
-  },
-  methods: {
-    reset () {
-      this.completed = null
-      this.alive = false
-      setTimeout(() => {
-        this.alive = true
-      }, 1000);
-
     }
   }
 }
