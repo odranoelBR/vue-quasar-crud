@@ -1,6 +1,7 @@
 <template>
   <div>
     <q-table
+      ref="table"
       :data="response"
       :columns="columns"
       :row-key="rowKey"
@@ -9,8 +10,7 @@
       :visible-columns="visibleColumns"
       :selected.sync="selected"
       :loading="loading"
-      :title="title"
-      class="bg-white"
+      v-bind="{ title, loading}"
       @request="request"
     >
       <template
@@ -284,7 +284,7 @@ export default {
       return Object.assign({}, ...list)
     },
     selectionMode () {
-      return (this.canCreate || this.canEdit) ? 'single' : 'none'
+      return (this.canCreate || this.canEdit || this.canDelete) ? 'single' : 'none'
     },
     someSelected () {
       return this.selected.length > 0
@@ -304,6 +304,7 @@ export default {
     }
   },
   created () {
+    console.log(QTable)
     this.pagination.rowsPerPage = this.rowsPerPage
   },
   mounted () {
@@ -363,8 +364,8 @@ export default {
       this.loading = true
       this.http.delete(`${this.api}/${this.selected[0].id}`)
         .then(response => {
-          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.get()
+          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.selected = []
           this.loading = false
         })
@@ -393,8 +394,8 @@ export default {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
           this.get()
-          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           this.loading = false
+          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           /**
            *  Emit the response Object of axios on sucefull created request.
            */
