@@ -4,6 +4,7 @@
       ref="table"
       :data="response"
       :selection="selectionMode"
+      :selected.sync="selected"
       v-bind="$props"
       @request="request"
     >
@@ -296,9 +297,6 @@ export default {
         this.get()
       }
     }
-  },
-  beforeCreate () {
-
   },
   created () {
     this.pagination.rowsPerPage = this.rowsPerPage

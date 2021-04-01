@@ -14,7 +14,7 @@
       <q-tab-example-three />
 
       <q-markdown
-        src="> Only fetch after user select. (using form outside of table to filter requests) "
+        src="> Rule to edit only the completed tasks. "
         class="q-pt-xl"
       />
       <q-tab-example-four />
