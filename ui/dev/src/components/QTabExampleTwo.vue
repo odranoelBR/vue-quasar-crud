@@ -38,6 +38,8 @@
           :columns.sync="columns"
           :http="axios"
           :list-index="list => list.data"
+          :can-create="false"
+          :can-edit="false"
           api="api/users"
           title="Emails"
           row-key="id"
@@ -79,6 +81,8 @@ export default {
  :columns.sync="columns"
  :http="axios"
  :list-index="list => list.data"
+ :can-create="false"
+ :can-edit="false"
  api="api/users"
  title="Emails"
  row-key="id"
@@ -105,6 +109,7 @@ export default {
         field: 'email',
         sortable: true,
         type: 'QInput',
+        static: true,
         value: '',
         size: '6',
         showCreate: true
