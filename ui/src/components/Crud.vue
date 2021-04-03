@@ -345,9 +345,9 @@ export default {
           this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
           if (response.data[this.paginationTotalIndex]) {
             this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+            this.$refs.table.setPagination(this.pagination)
           } else {
             delete this.pagination.rowsNumber
-            this.$refs.table.setPagination(this.pagination)
           }
 
           this.loading = false
