@@ -1,5 +1,4 @@
 const esModules = ['quasar/lang', 'lodash-es'].join('|');
-
 module.exports = {
   globals: {
     __DEV__: true,
@@ -40,12 +39,14 @@ module.exports = {
     '^test-utils$': '@vue/test-utils/dist/vue-test-utils.js',
     '^quasar$': 'quasar/dist/quasar.common.js',
     '^~/(.*)$': '<rootDir>/$1',
+    '^@components/(.*)$': '<rootDir>../ui/src/components/$1',
     '^src/(.*)$': '<rootDir>/src/$1',
     '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css',
   },
   transform: {
-    '../../../ui/src/components/Crud.vue': 'vue-jest',
-    '../../../ui/src/components/Crud.js': 'babel-jest',
+    "^.+\\.js$": "babel-jest",
+    "^.+\\.vue$": "vue-jest",
+    '<rootDir>../ui/src/components/$1': 'babel-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub',
     // use these if NPM is being flaky, care as hosting could interfere with these

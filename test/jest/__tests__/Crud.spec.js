@@ -1,6 +1,6 @@
 import { mountQuasar } from '../index'
-import Crud from '../../../ui/src/components/Crud'
 import axios from 'axios'
+import Crud from '@components/Crud.vue'
 import columns from './columns.js'
 jest.mock('axios');
 
@@ -41,7 +41,7 @@ test('api url mounting defalt mouting', () => {
     propsData: defautPropsData
   })
 
-  expect(wrapper.vm.apiUri).toBe('people?page=0&size=3&sort=,asc')
+  expect(wrapper.vm.apiUri).toBe('people?page=1&per_page=3&sort=,asc')
 })
 
 test('object to save mounting empty', () => {
