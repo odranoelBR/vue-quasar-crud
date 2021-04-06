@@ -6,12 +6,21 @@ module.exports = {
   // verbose: true,
   // watch: true,
   collectCoverage: true,
-  coverageDirectory: '<rootDir>/jest/coverage',
+  coverageDirectory: '<rootDir>test/jest/coverage',
   collectCoverageFrom: [
-    '<rootDir>../ui/src/components/*.vue'
+    '<rootDir>/ui/src/components/**/*.(js|vue)'
+  ],
+  rootDir: "../",
+  roots: [
+    '<rootDir>/test',
+    '<rootDir>/ui'
   ],
   // Needed in JS codebases too because of feature flags
-  coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$'],
+  coveragePathIgnorePatterns: [
+    'test/node_modules/',
+    'ui/node_modules/',
+    '.d.ts$'
+  ],
   coverageThreshold: {
     global: {
       //  branches: 50,
@@ -21,26 +30,22 @@ module.exports = {
     },
   },
   testMatch: [
-    '<rootDir>/jest/__tests__/**/*.(spec|test).js',
+    '<rootDir>/test/jest/__tests__/**/*.(spec|test).js',
   ],
   moduleFileExtensions: ['vue', 'js', 'jsx', 'json'],
   moduleNameMapper: {
-    '^vue$': '<rootDir>/node_modules/vue/dist/vue.common.js',
-    '^test-utils$': '@vue/test-utils/dist/vue-test-utils.js',
+    '^vue$': '<rootDir>/test/node_modules/vue/dist/vue.common.js',
     '^quasar$': 'quasar/dist/quasar.common.js',
-    '^~/(.*)$': '<rootDir>/$1',
-    '^@components/(.*)$': '<rootDir>../ui/src/components/$1',
-    '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css',
+    '^@components/(.*)$': '<rootDir>/ui/src/components/$1'
   },
   transform: {
-    "^.+\\.js$": "babel-jest",
-    "^.+\\.vue$": "vue-jest",
-    '<rootDir>../ui/src/components/$1': 'babel-jest',
+    "^.+\\.js$": "<rootDir>/test/node_modules/babel-jest",
+    "^.+\\.vue$": "<rootDir>/test/node_modules/vue-jest",
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
-      'jest-transform-stub',
+      '<rootDir>/test/node_modules/jest-transform-stub',
   },
   transformIgnorePatterns: [
     `node_modules/(?!(${esModules}))`
   ],
-  snapshotSerializers: ['jest-serializer-vue'],
+  snapshotSerializers: ['<rootDir>/test/node_modules/jest-serializer-vue'],
 };
