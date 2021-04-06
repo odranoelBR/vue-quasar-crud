@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test:unit": "jest --updateSnapshot --runInBand"
+    "test:unit": "jest",
+    "test:unit:coverage": "jest --coverage"
   },
   "dependencies": {
     "@babel/core": "^7.13.14",

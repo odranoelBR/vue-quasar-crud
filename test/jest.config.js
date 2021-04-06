@@ -1,23 +1,14 @@
 const esModules = ['quasar/lang', 'lodash-es'].join('|');
 module.exports = {
   globals: {
-    __DEV__: true,
-    // TODO: Remove if resolved natively https://github.com/vuejs/vue-jest/issues/175
-    'vue-jest': {
-      pug: { doctype: 'html' },
-    },
+    __DEV__: true
   },
-  // noStackTrace: true,
-  // bail: true,
-  // cache: false,
   // verbose: true,
   // watch: true,
-  collectCoverage: false,
-  coverageDirectory: '<rootDir>/test/jest/coverage',
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/jest/coverage',
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.vue',
-    '<rootDir>/src/**/*.js',
-    '<rootDir>/src/**/*.jsx',
+    '<rootDir>../ui/src/components/*.vue'
   ],
   // Needed in JS codebases too because of feature flags
   coveragePathIgnorePatterns: ['/node_modules/', '.d.ts$'],
@@ -31,7 +22,6 @@ module.exports = {
   },
   testMatch: [
     '<rootDir>/jest/__tests__/**/*.(spec|test).js',
-    '<rootDir>/src/**/*.jest.(spec|test).js',
   ],
   moduleFileExtensions: ['vue', 'js', 'jsx', 'json'],
   moduleNameMapper: {
@@ -40,7 +30,6 @@ module.exports = {
     '^quasar$': 'quasar/dist/quasar.common.js',
     '^~/(.*)$': '<rootDir>/$1',
     '^@components/(.*)$': '<rootDir>../ui/src/components/$1',
-    '^src/(.*)$': '<rootDir>/src/$1',
     '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css',
   },
   transform: {
@@ -49,9 +38,6 @@ module.exports = {
     '<rootDir>../ui/src/components/$1': 'babel-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub',
-    // use these if NPM is being flaky, care as hosting could interfere with these
-    // '.*\\.vue$': '@quasar/quasar-app-extension-testing-unit-jest/node_modules/vue-jest',
-    // '.*\\.js$': '@quasar/quasar-app-extension-testing-unit-jest/node_modules/babel-jest'
   },
   transformIgnorePatterns: [
     `node_modules/(?!(${esModules}))`

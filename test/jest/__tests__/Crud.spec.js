@@ -4,6 +4,11 @@ import Crud from '@components/Crud.vue'
 import columns from './columns.js'
 jest.mock('axios');
 
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation(() => { });
+  jest.spyOn(console, 'error').mockImplementation(() => { });
+});
+
 const defautPropsData = {
   http: axios,
   api: '',
@@ -96,15 +101,17 @@ test('object to save mounting with formating values', () => {
   expect(wrapper.vm.objectToSave).toStrictEqual({ "email": 'brother@mail.com', "first_name": 'BROTHER' })
 })
 
-// test('object to save mounting with formating values', () => {
-//   axios.get.mockResolvedValue([]);
-//   defautPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
-//   defautPropsData.columns[0].formatForPost = ''
+test('column prop valitador with string value on format', () => {
 
-//   defautPropsData.columns[1].value = 'brother'
-//   defautPropsData.columns[1].formatForPost = {}
+  axios.get.mockResolvedValue([]);
+  defautPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
+  defautPropsData.columns[0].formatForPost = ''
 
-//   expect(() => {
-//     mountQuasar(Crud, { propsData: defautPropsData })
-//   }).toThrowError('formatForPost must be function on column email');
-// })
+  defautPropsData.columns[1].value = 'brother'
+  defautPropsData.columns[1].formatForPost = {}
+
+  const validator = Crud.props.columns.validator
+  expect(validator(defautPropsData.columns)).toBe(false)
+  expect(console.warn).toHaveBeenCalled();
+  expect(console.error).toHaveBeenCalled();
+})

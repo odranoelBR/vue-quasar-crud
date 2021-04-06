@@ -151,13 +151,14 @@ import {
   Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
   QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
 } from 'quasar'
-
+import { formatForPostValidator } from './helper.js'
 let qTableProps = JSON.parse(JSON.stringify(QTable.options.props))
 delete qTableProps.data
 delete qTableProps.pagination
 delete qTableProps.selection
 delete qTableProps.selected
 delete qTableProps.loading
+delete qTableProps.columns
 
 export default {
   name: 'Crud',
@@ -172,6 +173,9 @@ export default {
     /** The Quasar Columns config 
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
+    columns: {
+      type: Array, default: [], validator: formatForPostValidator
+    },
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
     canCreate: { type: Boolean, default: true },
@@ -272,7 +276,6 @@ export default {
     objectToSave () {
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
-        .map(column => this.validateFormatFunctionForColumn(column))
         .map(column => ({
           [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
         }))
@@ -469,9 +472,8 @@ export default {
       )
     },
     validateFormatFunctionForColumn (column) {
-      if (column.formatForPost && typeof column.formatForPost !== 'function') {
-        throw new Error(`formatForPost must be function on column ${column.name}`)
-      }
+      console.log(column.formatForPost && typeof column.formatForPost !== 'function');
+
       return column
     },
     selectableRuleDefault (row) {
