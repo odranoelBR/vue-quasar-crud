@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "test:unit": "jest",
-    "test:unit:coverage": "jest --coverage --verbose"
+    "test:unit": "jest --runInBand ",
+    "test:unit:coverage": "jest --runInBand --coverage"
   },
   "dependencies": {
     "@babel/core": "^7.13.14",

@@ -5,7 +5,7 @@ module.exports = {
   },
   // verbose: true,
   // watch: true,
-  collectCoverage: true,
+  collectCoverage: false,
   coverageDirectory: '<rootDir>test/jest/coverage',
   collectCoverageFrom: [
     '<rootDir>/ui/src/components/**/*.(js|vue)'
