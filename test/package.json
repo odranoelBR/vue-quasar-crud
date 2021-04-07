@@ -2,7 +2,7 @@
   "scripts": {
     "test:unit": "jest --runInBand ",
     "test:unit:coverage": "jest --runInBand --coverage",
-    "test:unit:ci": "jest --ci --runInBand --coverage"
+    "test:unit:ci": "jest --ci --runInBand --coverage && codecov"
   },
   "dependencies": {
     "@babel/core": "^7.13.14",
