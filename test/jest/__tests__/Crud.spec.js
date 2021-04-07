@@ -178,5 +178,4 @@ test('column prop valitador with string value on format', () => {
   const validator = Crud.props.columns.validator
   expect(validator(defautPropsData.columns)).toBeFalsy()
   expect(console.warn).toHaveBeenCalled();
-  expect(console.error).toHaveBeenCalled();
 })
