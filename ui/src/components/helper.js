@@ -4,5 +4,6 @@ export function formatForPostValidator (columns) {
 			console.warn(`formatForPost must be function on column ${column.name}`)
 			return false
 		}
+		return true
 	})
 }
