@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "cd dev && yarn dev && cd ..",
     "docgen": "yarn vue-docgen src/components/**/*.vue .",
-    "test:unit": "jest --maxWorkers=4",
     "dev:umd": "yarn build && node build/script.open-umd.js",
     "dev:ssr": "cd dev && yarn 'dev:ssr' && cd ..",
     "dev:ios": "cd dev && yarn 'dev:ios' && cd ..",

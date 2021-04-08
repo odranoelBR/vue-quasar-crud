@@ -105,6 +105,7 @@ export default {
         field: 'email',
         sortable: true,
         type: 'QInput',
+        formatForPost: '',
         value: '',
         size: '6',
         showCreate: true

@@ -1,0 +1,15 @@
+name: Running Code Coverage
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/checkout@v2
+      - run: cd test && npm install
+      - run: cd ui && npm install
+      - run: cd test && npm run test:unit:ci
