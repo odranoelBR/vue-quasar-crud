@@ -96,6 +96,8 @@ export default {
  :get-on-start="false"
  :get-on-param-change="true"
  :params="\`completed=\${completed}\`"
+ :rows-per-page="7"
+ :pagination-server-side="false"
  api="api/users"
  title="Emails"
  row-key="id"
