@@ -4,6 +4,7 @@
       ref="table"
       :data="response"
       :selection="selectionMode"
+      :pagination.sync="pagination"
       :selected.sync="selected"
       :loading="loading"
       v-bind="$props"
@@ -291,6 +292,9 @@ export default {
     },
     messageDeleteForShow () {
       return typeof this.msgDelete === 'function' ? this.msgDelete(this.selected[0]) : this.msgDelete
+    },
+    url () {
+
     }
   },
   watch: {
@@ -440,12 +444,8 @@ export default {
           this.loading = false
         })
     },
-    request ({ pagination, filter }) {
+    request ({ pagination }) {
       this.pagination = pagination
-
-      if (pagination.rowsPerPage === 0) {
-        this.pagination.rowsPerPage = 200
-      }
 
       this.get()
     },

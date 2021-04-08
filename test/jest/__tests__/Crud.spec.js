@@ -1,4 +1,5 @@
 import { mountQuasar } from '../index'
+import { Dialog } from 'quasar'
 import axios from 'axios'
 import Crud from '@components/Crud.vue'
 import columns from './columns.js'
@@ -19,6 +20,11 @@ const defautPropsData = {
   rowKey: ''
 }
 
+let returnData = [
+  { id: 1, first_name: 'Brominator', 'email': 'bro@gmail.com' },
+  { id: 2, first_name: 'Foo f', 'email': 'foo@gmail.com' }
+]
+
 test('all columns enabled to create', () => {
 
   const wrapper = mountQuasar(Crud, {
@@ -29,10 +35,6 @@ test('all columns enabled to create', () => {
 })
 
 test('at least one row was selected', () => {
-  let returnData = [
-    { id: 1, first_name: 'Brominator', 'email': 'bro@gmail.com' },
-    { id: 2, first_name: 'Foo f', 'email': 'foo@gmail.com' }
-  ]
   axios.get.mockResolvedValue(returnData);
 
   const wrapper = mountQuasar(Crud, {
@@ -63,8 +65,50 @@ test('get fields with validation', () => {
   expect(wrapper.vm.fieldsWithValidation).toStrictEqual([defautPropsData.columns[0]])
 })
 
+test('custom message delete with function after user select', () => {
+
+  axios.get.mockResolvedValue(returnData);
+
+  defautPropsData.msgDelete = row => `Deleted ${row.first_name} ?`
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  wrapper.setData({ selected: [returnData[0]] })
+
+  expect(wrapper.vm.messageDeleteForShow).toBe('Deleted Brominator ?')
+})
+
+test('custom title delete with function after user select', () => {
+
+  axios.get.mockResolvedValue(returnData);
+
+  defautPropsData.msgDelete = row => `Do you want delete ${row.first_name} ?`
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  wrapper.setData({ selected: [returnData[1]] })
+
+  expect(wrapper.vm.messageDeleteForShow).toBe('Do you want delete Foo f ?')
+})
+
+
+test('get fields with validation', () => {
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  expect(wrapper.vm.fieldsWithValidation).toHaveLength(1)
+  expect(wrapper.vm.fieldsWithValidation).toStrictEqual([defautPropsData.columns[0]])
+})
+
 
 test('mount component without make requests', () => {
+
   defautPropsData.getOnStart = false
 
   const spyOnGet = jest.spyOn(Crud.methods, 'get')
@@ -77,6 +121,7 @@ test('mount component without make requests', () => {
 })
 
 test('make a get request ONLY when param change', async () => {
+
   defautPropsData.getOnStart = false
   defautPropsData.getOnParamChange = true
 
@@ -93,6 +138,7 @@ test('make a get request ONLY when param change', async () => {
 })
 
 test('only email column are visible to create', () => {
+
   defautPropsData.columns[0].showCreate = false
   axios.get.mockResolvedValue([]);
 
@@ -104,7 +150,7 @@ test('only email column are visible to create', () => {
 })
 
 test('api url mounting defalt mouting', () => {
-  axios.get.mockResolvedValue([]);
+
   defautPropsData.api = 'people'
 
   const wrapper = mountQuasar(Crud, {
@@ -115,6 +161,7 @@ test('api url mounting defalt mouting', () => {
 })
 
 test('object to save mounting empty', () => {
+
   axios.get.mockResolvedValue([]);
   defautPropsData.columns[0].value = ''
   defautPropsData.columns[1].value = ''
@@ -127,7 +174,7 @@ test('object to save mounting empty', () => {
 })
 
 test('object to save mounting simple values', () => {
-  axios.get.mockResolvedValue([]);
+
   defautPropsData.columns[0].value = 'Brother Lee'
   defautPropsData.columns[1].value = 'brother@mail.com'
 
@@ -140,7 +187,7 @@ test('object to save mounting simple values', () => {
 
 
 test('object to save mounting complex values', () => {
-  axios.get.mockResolvedValue([]);
+
   defautPropsData.columns[0].value = {}
   defautPropsData.columns[1].value = []
 
@@ -152,7 +199,7 @@ test('object to save mounting complex values', () => {
 })
 
 test('object to save mounting with formating values', () => {
-  axios.get.mockResolvedValue([]);
+
   defautPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
   defautPropsData.columns[0].formatForPost = (value) => value.value
 
@@ -168,7 +215,6 @@ test('object to save mounting with formating values', () => {
 
 test('column prop valitador with string value on format', () => {
 
-  axios.get.mockResolvedValue([]);
   defautPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
   defautPropsData.columns[0].formatForPost = ''
 
@@ -197,10 +243,6 @@ test('open modal without data', () => {
   expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
 })
 test('open modal with data after select a row ', () => {
-  let returnData = [
-    { id: 1, first_name: 'Brominator', 'email': 'bro@gmail.com' },
-    { id: 2, first_name: 'Foo f', 'email': 'foo@gmail.com' }
-  ]
 
   axios.get.mockResolvedValue(returnData);
 
@@ -217,4 +259,16 @@ test('open modal with data after select a row ', () => {
 
   expect(wrapper.vm.modalOpened).toBeTruthy()
   expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
+})
+
+test('Dialog start DELETE request after click yes ', () => {
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+  const spyOnDialog = spyOn(Dialog.create(), 'onOk')
+
+  wrapper.vm.toggleConfirmDelete()
+
+  expect(spyOnDialog).toHaveBeenCalled()
 })
