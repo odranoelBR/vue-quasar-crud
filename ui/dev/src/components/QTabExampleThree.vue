@@ -67,6 +67,7 @@
           :can-edit="false"
           :get-on-start="false"
           :get-on-param-change="true"
+          @successOnDelete="notifyDeleted"
           :params="`completed=${completed}`"
           api="todos"
           title="Tasks"
@@ -94,7 +95,7 @@
 <script>
 import Crud from '../../../src/components/Crud'
 import axios from 'axios'
-
+import { Notify } from 'quasar'
 export default {
   components: {
     Crud
@@ -165,7 +166,9 @@ export default {
       setTimeout(() => {
         this.alive = true
       }, 1000);
-
+    },
+    notifyDeleted () {
+      Notify.create({ type: 'negative', message: 'Succes on lock!' })
     }
   }
 }

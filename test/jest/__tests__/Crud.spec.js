@@ -176,6 +176,45 @@ test('column prop valitador with string value on format', () => {
   defautPropsData.columns[1].formatForPost = {}
 
   const validator = Crud.props.columns.validator
+
   expect(validator(defautPropsData.columns)).toBeFalsy()
   expect(console.warn).toHaveBeenCalled();
+})
+
+test('open modal without data', () => {
+
+  axios.get.mockResolvedValue([]);
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+  const spyOnResetColumnsValuesMethod = jest.spyOn(wrapper.vm, 'resetColumnsValues')
+
+  expect(wrapper.vm.modalOpened).toBeFalsy()
+  wrapper.vm.toggleModal()
+
+  expect(wrapper.vm.modalOpened).toBeTruthy()
+  expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
+})
+test('open modal with data after select a row ', () => {
+  let returnData = [
+    { id: 1, first_name: 'Brominator', 'email': 'bro@gmail.com' },
+    { id: 2, first_name: 'Foo f', 'email': 'foo@gmail.com' }
+  ]
+
+  axios.get.mockResolvedValue(returnData);
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  wrapper.setData({ selected: [returnData[0]] })// select a row
+
+  const spyOnResetColumnsValuesMethod = jest.spyOn(wrapper.vm, 'populateColumnsWithSelectedRow')
+
+  expect(wrapper.vm.modalOpened).toBeFalsy()
+  wrapper.vm.toggleModalWithData()
+
+  expect(wrapper.vm.modalOpened).toBeTruthy()
+  expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
 })
