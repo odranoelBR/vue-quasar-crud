@@ -43,6 +43,7 @@
           :can-create="false"
           :selectable-rule="item => item.completed"
           :rows-per-page="7"
+          :pagination-server-side="false"
           api="todos"
           title="Tasks"
           row-key="id"

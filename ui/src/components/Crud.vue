@@ -238,6 +238,8 @@ export default {
      * @link https://quasar.dev/vue-components/table#pagination
      */
     paginationTotalIndex: { type: String, default: 'total' },
+    /** Define if pagination will be server side */
+    paginationServerSide: { type: Boolean, default: true },
     /** The message on dialog to confirm deletation */
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
     /** The title of modal delete */
@@ -252,7 +254,6 @@ export default {
     pagination: {
       page: 1,
       rowsPerPage: 1,
-      rowsNumber: 1,
       descending: false,
       sortBy: ''
     }
@@ -306,6 +307,9 @@ export default {
   },
   created () {
     this.pagination.rowsPerPage = this.rowsPerPage
+    if (this.paginationServerSide) {
+      this.pagination.rowsNumber = 1
+    }
   },
   mounted () {
     if (this.getOnStart) {
@@ -347,10 +351,8 @@ export default {
           this.response = this.listIndex(response.data)
           if (response.data[this.paginationTotalIndex]) {
             this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-            this.$refs.table.setPagination(this.pagination)
-          } else {
-            delete this.pagination.rowsNumber
           }
+
         })
         .catch(error => {
           /**

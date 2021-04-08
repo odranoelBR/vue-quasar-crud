@@ -67,6 +67,7 @@
           :can-edit="false"
           :get-on-start="false"
           :get-on-param-change="true"
+          :pagination-server-side="false"
           @successOnDelete="notifyDeleted"
           :params="`completed=${completed}`"
           api="todos"
