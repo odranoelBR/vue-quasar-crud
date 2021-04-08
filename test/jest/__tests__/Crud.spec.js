@@ -261,14 +261,15 @@ test('open modal with data after select a row ', () => {
   expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
 })
 
-test('Dialog start DELETE request after click yes ', () => {
+test('get $emit successOnGet event', async () => {
 
   const wrapper = mountQuasar(Crud, {
     propsData: defautPropsData
   })
-  const spyOnDialog = spyOn(Dialog.create(), 'onOk')
 
-  wrapper.vm.toggleConfirmDelete()
+  wrapper.vm.get()
+  await wrapper.vm.$nextTick()
 
-  expect(spyOnDialog).toHaveBeenCalled()
+  expect(wrapper.emitted().successOnGet).toBeTruthy()
+
 })

@@ -262,7 +262,10 @@ export default {
       return this.columns.filter(column => column.showCreate)
     },
     apiUri () {
-      return `${this.api}?${this.paginationPageIndex}=${this.pagination.page}&${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
+        `${this.paginationPageIndex}=${this.pagination.page}&` +
+        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -292,9 +295,6 @@ export default {
     },
     messageDeleteForShow () {
       return typeof this.msgDelete === 'function' ? this.msgDelete(this.selected[0]) : this.msgDelete
-    },
-    url () {
-
     }
   },
   watch: {
@@ -337,22 +337,14 @@ export default {
       })
     },
     get () {
-      let page = Object.assign(this.pagination.page, '')
-      let withParams = this.params ? `${this.api}?${this.params}&` : `${this.api}?`
-      let url = withParams +
-        `${this.paginationPageIndex}=${page}&` +
-        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
-        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
-
       this.loading = true
-      this.http.get(url)
+      this.http.get(this.apiUri)
         .then(response => {
           /**
           *  $emit('successOnGet', response) on sucefull get request.
           */
           this.$emit('successOnGet', response)
           this.response = this.listIndex(response.data)
-          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
           if (response.data[this.paginationTotalIndex]) {
             this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
             this.$refs.table.setPagination(this.pagination)
@@ -482,6 +474,9 @@ export default {
         }
       }
       )
+    },
+    defineServerSideRequest (response) {
+
     },
     selectableRuleDefault (row) {
       return !!row
