@@ -1,16 +1,11 @@
 <template>
   <div>
     <q-table
+      ref="table"
       :data="response"
-      :columns="columns"
-      :row-key="rowKey"
-      :pagination.sync="pagination"
       :selection="selectionMode"
-      :visible-columns="visibleColumns"
       :selected.sync="selected"
-      :loading="loading"
-      :title="title"
-      class="bg-white"
+      v-bind="$props"
       @request="request"
     >
       <template
@@ -98,7 +93,7 @@
     >
       <q-card>
         <q-card-section class="bg-primary text-white">
-          {{ itemName }}
+          {{ modalTextTitle }}
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -148,10 +143,22 @@
 </template>
 
 <script>
+/**
+   * The only true CRUD Table.
+   * @display API
+   */
 import {
   Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
   QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
 } from 'quasar'
+import { formatForPostValidator } from './helper.js'
+let qTableProps = JSON.parse(JSON.stringify(QTable.options.props))
+delete qTableProps.data
+delete qTableProps.pagination
+delete qTableProps.selection
+delete qTableProps.selected
+delete qTableProps.loading
+delete qTableProps.columns
 
 export default {
   name: 'Crud',
@@ -160,35 +167,86 @@ export default {
     QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
   },
   props: {
+    ...qTableProps,
+    /** The rest API endpoint */
     api: { type: String, required: true },
-    columns: { type: Array, required: true },
+    /** The Quasar Columns config 
+     * @link https://quasar.dev/vue-components/table#defining-the-columns
+     */
+    columns: {
+      type: Array, default: [], validator: formatForPostValidator
+    },
     createRule: { type: Boolean, default: true },
+    /** Enable / Disable POST http creation of resource */
     canCreate: { type: Boolean, default: true },
+    /** Enable / Disable DELETE http deletion of resource */
     canDelete: { type: Boolean, default: true },
+    /** Enable / Disable PUT http edit of resource */
     canEdit: { type: Boolean, default: true },
+    /** The Axios instance
+     *  @example axios.create({ baseURL: 'https://reqres.in/' })
+     */
     http: { type: Function, required: true },
+    /** The icon of delete button 
+     * @link https://quasar.dev/vue-components/button#with-icon
+     */
     iconDelete: { type: [String, Function], default: 'delete' },
+    /** The color of delete button */
     iconDeleteColor: { type: [String, Function], default: 'negative' },
-    itemName: { type: String, default: '' },
+    /** The text of title on modal (edit / create) */
+    modalTextTitle: { type: String, default: '' },
+    /** The component will fetch remote data on mounted hook */
     getOnStart: { type: Boolean, default: true },
+    /** The component will fetch remote data on params props change */
     getOnParamChange: { type: Boolean, default: false },
+    /** The function that will filter the data from the axios response 
+     * @example axios response from the server 
+     * { data: { people: [..., ...]}, status: 200, headers: {} ... }
+     * So a function can be list => list.people
+     * @link https://github.com/axios/axios#response-schema
+     */
     listIndex: { type: Function, required: true },
+    /** The message on dialog to confirm deletation */
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
+    /** The message on notification of succesfull delete */
     msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
+    /** The message on notification of succesfull create */
     msgCreatedSucess: { type: [String, Function], default: 'Created!' },
+    /** The message on notification of succesfull update */
     msgUpdatedSucess: { type: [String, Function], default: 'Updated!' },
+    /** The message on dialog of canceled action */
     msgCanceledAction: { type: [String, Function], default: 'Canceled ...' },
+    /** The function to allow user select the row 
+     * @example selectableRule (row) { return row.status === 'ACTIVE' }
+     */
     selectableRule: { type: Function, default: () => true },
-    search: { type: String, default: '' },
+    /** The index of rows (id) */
     rowKey: { type: String, required: true },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     rowsPerPage: { type: Number, default: 3 },
+    /** Query params of the url
+     * @link https://en.wikipedia.org/wiki/Query_string
+     */
     params: { type: String, default: '' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationPageIndex: { type: String, default: 'page' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationRowsPerPageIndex: { type: String, default: 'per_page' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationSortIndex: { type: String, default: 'sort' },
+    /** The quasar pagination system
+     * @link https://quasar.dev/vue-components/table#pagination
+     */
     paginationTotalIndex: { type: String, default: 'total' },
-    title: { type: String, default: '' },
-    visibleColumns: { type: Array, default: () => ([]) },
+    /** The title of modal delete */
     titleDelete: { type: [String, Function], default: 'Delete' },
   },
   data: () => ({
@@ -198,7 +256,7 @@ export default {
     selected: [],
     response: [],
     pagination: {
-      page: 0,
+      page: 1,
       rowsPerPage: 1,
       rowsNumber: 1,
       descending: false,
@@ -210,7 +268,7 @@ export default {
       return this.columns.filter(column => column.showCreate)
     },
     apiUri () {
-      return `${this.api}?page=${this.pagination.page}&size=${this.pagination.rowsPerPage}&sort=${this.pagination.sortBy},${this.sortDirection}`
+      return `${this.api}?${this.paginationPageIndex}=${this.pagination.page}&${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -218,14 +276,13 @@ export default {
     objectToSave () {
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
-        .map(column => this.validateFormatFunctionForColumn(column))
         .map(column => ({
           [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
         }))
       return Object.assign({}, ...list)
     },
     selectionMode () {
-      return (this.canCreate || this.canEdit) ? 'single' : 'none'
+      return (this.canCreate || this.canEdit || this.canDelete) ? 'single' : 'none'
     },
     someSelected () {
       return this.selected.length > 0
@@ -278,8 +335,8 @@ export default {
     },
     get () {
       let page = Object.assign(this.pagination.page, '')
-      let withSearch = this.search ? `${this.api}${this.search}?${this.params}&` : `${this.api}?`
-      let url = withSearch +
+      let withParams = this.params ? `${this.api}?${this.params}&` : `${this.api}?`
+      let url = withParams +
         `${this.paginationPageIndex}=${page}&` +
         `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
         `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
@@ -288,11 +345,20 @@ export default {
       this.http.get(url)
         .then(response => {
           this.response = this.listIndex(response.data)
-          this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex]
+          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
+          if (response.data[this.paginationTotalIndex]) {
+            this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+            this.$refs.table.setPagination(this.pagination)
+          } else {
+            delete this.pagination.rowsNumber
+          }
+
           this.loading = false
         })
         .catch(error => {
+          /**
+           *  Emit the ERROR Object of axios catch.
+           */
           this.$emit('error', error)
           this.loading = false
         })
@@ -301,12 +367,15 @@ export default {
       this.loading = true
       this.http.delete(`${this.api}/${this.selected[0].id}`)
         .then(response => {
-          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.get()
+          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
           this.selected = []
           this.loading = false
         })
         .catch(error => {
+          /**
+           *  Emit the ERROR Object of axios catch.
+           */
           this.$emit('error', error)
           this.loading = false
         })
@@ -328,8 +397,11 @@ export default {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
           this.get()
-          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           this.loading = false
+          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
+          /**
+           *  Emit the response Object of axios on sucefull created request.
+           */
           this.$emit('created', response)
           this.toggleModal()
         })
@@ -344,6 +416,9 @@ export default {
           this.get()
           Notify.create({ type: 'positive', message: this.msgUpdatedSucess })
           this.loading = false
+          /**
+           *  Emit the response Object of axios on sucefull updated request.
+           */
           this.$emit('updated', response)
           this.toggleModal()
         })
@@ -354,11 +429,7 @@ export default {
         })
     },
     request ({ pagination, filter }) {
-      this.pagination.rowsPerPage = pagination.rowsPerPage
-      this.pagination.sortBy = pagination.sortBy
-      this.pagination.rowsNumber = pagination.rowsNumber
-      this.pagination.page = pagination.page
-      this.pagination.descending = pagination.descending
+      this.pagination = pagination
 
       if (pagination.rowsPerPage === 0) {
         this.pagination.rowsPerPage = 200
@@ -401,9 +472,8 @@ export default {
       )
     },
     validateFormatFunctionForColumn (column) {
-      if (column.formatForPost && typeof column.formatForPost !== 'function') {
-        throw new Error(`formatForPost must be function on column ${column.name}`)
-      }
+      console.log(column.formatForPost && typeof column.formatForPost !== 'function');
+
       return column
     },
     selectableRuleDefault (row) {

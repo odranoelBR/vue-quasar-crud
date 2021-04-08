@@ -34,7 +34,7 @@
     <q-page-container>
       <transition
         appear
-        :duration="{ enter: 300, leave: 300 }"
+        :duration="{ enter: 200, leave: 200 }"
         mode="out-in"
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"

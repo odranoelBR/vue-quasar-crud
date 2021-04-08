@@ -47,6 +47,6 @@ Object.keys(originalExpect).forEach(key => (global.expect[key] = originalExpect[
 */
 
 // do this to make sure we don't get multiple hits from both webpacks when running SSR
-setTimeout(()=>{
+setTimeout(() => {
   // do nothing
 }, 1)

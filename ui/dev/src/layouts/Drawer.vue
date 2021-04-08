@@ -64,7 +64,8 @@ export default {
     leftDrawerOpen: true,
     routes: [
       { route: "/", faIcon: "fa fa-home", materialIcon: "started", name: "Getting started", routeName: "started" },
-      { route: "/more-examples", faIcon: "fa fa-chalkboard-teacher", materialIcon: "data", name: "More examples", routeName: "more-examples" }
+      { route: "/more-examples", faIcon: "fa fa-chalkboard-teacher", materialIcon: "data", name: "More examples", routeName: "more-examples" },
+      { route: "/api", faIcon: "fa fa-handshake", materialIcon: "handshake", name: "API", routeName: "api" }
     ],
     links: [
       { route: "https://vuejs.org", faIcon: "fa fa-money-bill-alt", name: "Vue.js" },
