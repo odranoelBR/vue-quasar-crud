@@ -447,7 +447,9 @@ export default {
       })
     },
     resetValitation () {
-      this.fieldsWithValidation.forEach(field => this.$refs[field.name][0].validate())
+      this.fieldsWithValidation
+        .filter(field => this.$refs[field.name].hasOwnProperty('rule'))
+        .forEach(field => this.$refs[field.name][0].validate())
     },
     resetColumnsValues () {
       this.columns.forEach(column => {

@@ -16,7 +16,7 @@ beforeAll(() => {
 const defaultPropsData = () => ({
   http: axios,
   api: '',
-  columns,
+  columns: JSON.parse(JSON.stringify(columns)),
   listIndex: value => value,
   rowKey: ''
 })
@@ -103,18 +103,21 @@ test('custom title delete with function after user select', () => {
 
 test('get fields with validation', () => {
 
+  const props = defaultPropsData()
+
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData()
+    propsData: props
   })
 
   expect(wrapper.vm.fieldsWithValidation).toHaveLength(1)
-  expect(wrapper.vm.fieldsWithValidation).toStrictEqual([defaultPropsData.columns[0]])
+  expect(wrapper.vm.fieldsWithValidation).toStrictEqual([props.columns[0]])
 })
 
 
 test('mount component without make requests', () => {
 
   const props = defaultPropsData()
+
   props.getOnStart = false
 
   const spyOnGet = jest.spyOn(Crud.methods, 'get')
@@ -205,11 +208,13 @@ test('object to save mounting simple values', () => {
 
 test('object to save mounting complex values', () => {
 
-  defaultPropsData.columns[0].value = {}
-  defaultPropsData.columns[1].value = []
+  const props = defaultPropsData()
+
+  props.columns[0].value = {}
+  props.columns[1].value = []
 
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   expect(wrapper.vm.objectToSave).toStrictEqual({ "email": [], "first_name": {} })
@@ -217,14 +222,16 @@ test('object to save mounting complex values', () => {
 
 test('object to save mounting with formating values', () => {
 
-  defaultPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
-  defaultPropsData.columns[0].formatForPost = (value) => value.value
+  const props = defaultPropsData()
 
-  defaultPropsData.columns[1].value = 'brother'
-  defaultPropsData.columns[1].formatForPost = (value) => `${value}@mail.com`
+  props.columns[0].value = { value: 'BROTHER', label: 'Brother' }
+  props.columns[0].formatForPost = (value) => value.value
+
+  props.columns[1].value = 'brother'
+  props.columns[1].formatForPost = (value) => `${value}@mail.com`
 
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   expect(wrapper.vm.objectToSave).toStrictEqual({ "email": 'brother@mail.com', "first_name": 'BROTHER' })
@@ -232,15 +239,17 @@ test('object to save mounting with formating values', () => {
 
 test('column prop valitador with string value on format', () => {
 
-  defaultPropsData.columns[0].value = { value: 'BROTHER', label: 'Brother' }
-  defaultPropsData.columns[0].formatForPost = ''
+  const props = defaultPropsData()
 
-  defaultPropsData.columns[1].value = 'brother'
-  defaultPropsData.columns[1].formatForPost = {}
+  props.columns[0].value = { value: 'BROTHER', label: 'Brother' }
+  props.columns[0].formatForPost = ''
+
+  props.columns[1].value = 'brother'
+  props.columns[1].formatForPost = {}
 
   const validator = Crud.props.columns.validator
 
-  expect(validator(defaultPropsData.columns)).toBeFalsy()
+  expect(validator(props.columns)).toBeFalsy()
   expect(console.warn).toHaveBeenCalled();
 })
 
@@ -248,8 +257,9 @@ test('open modal without data', () => {
 
   axios.get.mockResolvedValue([]);
 
+  const props = defaultPropsData()
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
   const spyOnResetColumnsValuesMethod = jest.spyOn(wrapper.vm, 'resetColumnsValues')
 
@@ -263,8 +273,9 @@ test('open modal with data after select a row ', () => {
 
   axios.get.mockResolvedValue(returnData);
 
+  const props = defaultPropsData()
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   wrapper.setData({ selected: [returnData[0]] })// select a row
@@ -280,8 +291,9 @@ test('open modal with data after select a row ', () => {
 
 test('get $emit successOnGet event', async () => {
 
+  const props = defaultPropsData()
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   wrapper.vm.get()
@@ -294,10 +306,12 @@ test('get $emit successOnGet event', async () => {
 test('o succefull get set the total size from api', async () => {
   axios.get.mockResolvedValue({ data: response });
 
-  defaultPropsData.paginationTotalIndex = 'total'
+  const props = defaultPropsData()
+
+  props.paginationTotalIndex = 'total'
 
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   expect(wrapper.vm.pagination.rowsNumber).toBe(1)
@@ -312,8 +326,9 @@ test('delete $emit successOnDelete event', async () => {
 
   axios.delete.mockResolvedValue();
 
+  const props = defaultPropsData()
   const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
+    propsData: props
   })
 
   wrapper.setData({ selected: [returnData[0]] })
@@ -329,10 +344,11 @@ test('put $emit successOnPut event', async () => {
 
   axios.put.mockResolvedValue();
 
-  const wrapper = mountQuasar(Crud, {
-    propsData: defaultPropsData
-  })
+  const props = defaultPropsData()
 
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
   wrapper.setData({ selected: [returnData[0]] })
 
   wrapper.vm.put()
@@ -340,4 +356,83 @@ test('put $emit successOnPut event', async () => {
 
   expect(wrapper.emitted().successOnPut).toBeTruthy()
 
+})
+
+test('post $emit successOnPost event', async () => {
+
+  axios.post.mockResolvedValue();
+
+  const props = defaultPropsData()
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+  wrapper.setData({ selected: [returnData[0]] })
+
+  wrapper.vm.post()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.emitted().successOnPost).toBeTruthy()
+
+})
+
+test('reset validation when saving with validation errors, dont make requests', () => {
+
+  axios.post.mockResolvedValue([]);
+  axios.put.mockResolvedValue([]);
+
+  const props = defaultPropsData()
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+  const spyOnResetValidation = jest.spyOn(wrapper.vm, 'resetValitation')
+  const spyOnPost = jest.spyOn(wrapper.vm, 'post')
+  const spyOnPut = jest.spyOn(wrapper.vm, 'put')
+
+  jest.spyOn(wrapper.vm, 'hasValidationErrors').mockImplementation(() => true)
+
+  expect(spyOnResetValidation).not.toBeCalled()
+
+  wrapper.vm.save()
+
+  expect(spyOnResetValidation).toHaveBeenCalled()
+  expect(spyOnPost).not.toHaveBeenCalled()
+  expect(spyOnPut).not.toHaveBeenCalled()
+})
+
+
+test('saving start loading', () => {
+
+  axios.post.mockResolvedValue([]);
+  axios.put.mockResolvedValue([]);
+
+  const props = defaultPropsData()
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.vm.save()
+
+  expect(wrapper.vm.loading).toBeTruthy()
+})
+
+test('save start put request because at least one row are selected', () => {
+
+  axios.put.mockResolvedValue([]);
+  axios.get.mockResolvedValue(returnData);
+
+  const props = defaultPropsData()
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[0]] })
+
+  const spyOnPut = jest.spyOn(wrapper.vm, 'put')
+  const spyOnPost = jest.spyOn(wrapper.vm, 'post')
+
+  wrapper.vm.save()
+
+  expect(spyOnPut).toBeCalled()
+  expect(spyOnPost).not.toBeCalled()
 })
