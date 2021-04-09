@@ -176,7 +176,7 @@ export default {
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
     columns: {
-      type: Array, default: [], validator: formatForPostValidator
+      type: Array, default: () => ([]), validator: formatForPostValidator
     },
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
@@ -329,16 +329,12 @@ export default {
       this.modalOpened = !this.modalOpened
     },
     toggleConfirmDelete () {
-      Dialog.create({
-        title: this.titleDeleteForShow,
-        message: this.messageDeleteForShow,
-        ok: 'Yes',
-        cancel: 'No'
-      }).onOk(() => {
-        this.delete()
-      }).onCancel(() => {
-        Notify.create(this.msgCanceledAction)
-      })
+      Dialog.create({ title: this.titleDeleteForShow, message: this.messageDeleteForShow, ok: 'Yes', cancel: 'No' })
+        .onOk(() => {
+          this.delete()
+        }).onCancel(() => {
+          Notify.create(this.msgCanceledAction)
+        })
     },
     get () {
       this.loading = true
@@ -349,10 +345,10 @@ export default {
           */
           this.$emit('successOnGet', response)
           this.response = this.listIndex(response.data)
+
           if (response.data[this.paginationTotalIndex]) {
             this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
           }
-
         })
         .catch(error => {
           /**

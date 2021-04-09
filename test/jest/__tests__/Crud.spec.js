@@ -3,6 +3,8 @@ import { Dialog } from 'quasar'
 import axios from 'axios'
 import Crud from '@components/Crud.vue'
 import columns from './columns.js'
+import response from './response.json'
+
 jest.mock('axios');
 
 axios.get.mockResolvedValue([]);
@@ -16,7 +18,7 @@ const defautPropsData = {
   http: axios,
   api: '',
   columns,
-  listIndex: (value) => (value),
+  listIndex: value => value,
   rowKey: ''
 }
 
@@ -84,7 +86,7 @@ test('custom title delete with function after user select', () => {
 
   axios.get.mockResolvedValue(returnData);
 
-  defautPropsData.msgDelete = row => `Do you want delete ${row.first_name} ?`
+  defautPropsData.titleDelete = row => `Do you want delete ${row.first_name} ?`
 
   const wrapper = mountQuasar(Crud, {
     propsData: defautPropsData
@@ -92,7 +94,7 @@ test('custom title delete with function after user select', () => {
 
   wrapper.setData({ selected: [returnData[1]] })
 
-  expect(wrapper.vm.messageDeleteForShow).toBe('Do you want delete Foo f ?')
+  expect(wrapper.vm.titleDeleteForShow).toBe('Do you want delete Foo f ?')
 })
 
 
@@ -271,5 +273,45 @@ test('get $emit successOnGet event', async () => {
   await wrapper.vm.$nextTick()
 
   expect(wrapper.emitted().successOnGet).toBeTruthy()
+
+})
+
+test('o succefull get set the total size from api', async () => {
+  axios.get.mockResolvedValue({ data: response });
+
+  defautPropsData.paginationTotalIndex = 'total'
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  expect(wrapper.vm.pagination.rowsNumber).toBe(1)
+
+  wrapper.vm.get()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.vm.pagination.rowsNumber).toBe(12)
+})
+
+test('delete $emit successOnDelete event', async () => {
+
+  axios.get.mockResolvedValue(returnData);
+  axios.delete.mockResolvedValue();
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: defautPropsData
+  })
+
+  const spyOnGet = jest.spyOn(wrapper.vm, 'get')
+
+  wrapper.setData({ selected: [returnData[0]] })
+
+  expect(spyOnGet).toHaveBeenCalledTimes(1)
+
+  wrapper.vm.delete()
+  await wrapper.vm.$nextTick()
+
+  expect(spyOnGet).toHaveBeenCalledTimes(2)
+  expect(wrapper.emitted().successOnDelete).toBeTruthy()
 
 })
