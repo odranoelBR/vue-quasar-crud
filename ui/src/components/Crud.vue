@@ -275,7 +275,7 @@ export default {
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
         .map(column => ({
-          [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
+          [column.name]: column.hasOwnProperty('formatForPost') ? column.formatForPost(column.value) : column.value
         }))
       return Object.assign({}, ...list)
     },
@@ -345,10 +345,8 @@ export default {
           */
           this.$emit('successOnGet', response)
           this.response = this.listIndex(response.data)
+          this.organizePagination(response)
 
-          if (response.data[this.paginationTotalIndex]) {
-            this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-          }
         })
         .catch(error => {
           /**
@@ -473,8 +471,10 @@ export default {
       }
       )
     },
-    defineServerSideRequest (response) {
-
+    organizePagination (response) {
+      if (response.data[this.paginationTotalIndex]) {
+        this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+      }
     },
     selectableRuleDefault (row) {
       return !!row
