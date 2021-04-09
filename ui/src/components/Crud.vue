@@ -4,6 +4,7 @@
       ref="table"
       :data="response"
       :selection="selectionMode"
+      :pagination.sync="pagination"
       :selected.sync="selected"
       :loading="loading"
       v-bind="$props"
@@ -175,7 +176,7 @@ export default {
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
     columns: {
-      type: Array, default: [], validator: formatForPostValidator
+      type: Array, default: () => ([]), validator: formatForPostValidator
     },
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
@@ -237,6 +238,8 @@ export default {
      * @link https://quasar.dev/vue-components/table#pagination
      */
     paginationTotalIndex: { type: String, default: 'total' },
+    /** Define if pagination will be server side */
+    paginationServerSide: { type: Boolean, default: true },
     /** The message on dialog to confirm deletation */
     msgDelete: { type: [String, Function], default: 'Delete item ?' },
     /** The title of modal delete */
@@ -251,7 +254,6 @@ export default {
     pagination: {
       page: 1,
       rowsPerPage: 1,
-      rowsNumber: 1,
       descending: false,
       sortBy: ''
     }
@@ -261,7 +263,10 @@ export default {
       return this.columns.filter(column => column.showCreate)
     },
     apiUri () {
-      return `${this.api}?${this.paginationPageIndex}=${this.pagination.page}&${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
+        `${this.paginationPageIndex}=${this.pagination.page}&` +
+        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -270,7 +275,7 @@ export default {
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
         .map(column => ({
-          [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
+          [column.name]: column.hasOwnProperty('formatForPost') ? column.formatForPost(column.value) : column.value
         }))
       return Object.assign({}, ...list)
     },
@@ -302,6 +307,9 @@ export default {
   },
   created () {
     this.pagination.rowsPerPage = this.rowsPerPage
+    if (this.paginationServerSide) {
+      this.pagination.rowsNumber = 1
+    }
   },
   mounted () {
     if (this.getOnStart) {
@@ -321,40 +329,24 @@ export default {
       this.modalOpened = !this.modalOpened
     },
     toggleConfirmDelete () {
-      Dialog.create({
-        title: this.titleDeleteForShow,
-        message: this.messageDeleteForShow,
-        ok: 'Yes',
-        cancel: 'No'
-      }).onOk(() => {
-        this.delete()
-      }).onCancel(() => {
-        Notify.create(this.msgCanceledAction)
-      })
+      Dialog.create({ title: this.titleDeleteForShow, message: this.messageDeleteForShow, ok: 'Yes', cancel: 'No' })
+        .onOk(() => {
+          this.delete()
+        }).onCancel(() => {
+          Notify.create(this.msgCanceledAction)
+        })
     },
     get () {
-      let page = Object.assign(this.pagination.page, '')
-      let withParams = this.params ? `${this.api}?${this.params}&` : `${this.api}?`
-      let url = withParams +
-        `${this.paginationPageIndex}=${page}&` +
-        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
-        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
-
       this.loading = true
-      this.http.get(url)
+      this.http.get(this.apiUri)
         .then(response => {
           /**
           *  $emit('successOnGet', response) on sucefull get request.
           */
           this.$emit('successOnGet', response)
           this.response = this.listIndex(response.data)
-          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
-          if (response.data[this.paginationTotalIndex]) {
-            this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-            this.$refs.table.setPagination(this.pagination)
-          } else {
-            delete this.pagination.rowsNumber
-          }
+          this.organizePagination(response)
+
         })
         .catch(error => {
           /**
@@ -440,12 +432,8 @@ export default {
           this.loading = false
         })
     },
-    request ({ pagination, filter }) {
+    request ({ pagination }) {
       this.pagination = pagination
-
-      if (pagination.rowsPerPage === 0) {
-        this.pagination.rowsPerPage = 200
-      }
 
       this.get()
     },
@@ -459,7 +447,9 @@ export default {
       })
     },
     resetValitation () {
-      this.fieldsWithValidation.forEach(field => this.$refs[field.name][0].validate())
+      this.fieldsWithValidation
+        .filter(field => this.$refs[field.name].hasOwnProperty('rule'))
+        .forEach(field => this.$refs[field.name][0].validate())
     },
     resetColumnsValues () {
       this.columns.forEach(column => {
@@ -482,6 +472,11 @@ export default {
         }
       }
       )
+    },
+    organizePagination (response) {
+      if (response.data[this.paginationTotalIndex]) {
+        this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+      }
     },
     selectableRuleDefault (row) {
       return !!row
