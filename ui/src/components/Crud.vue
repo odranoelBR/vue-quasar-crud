@@ -4,7 +4,9 @@
       ref="table"
       :data="response"
       :selection="selectionMode"
+      :pagination.sync="pagination"
       :selected.sync="selected"
+      :loading="loading"
       v-bind="$props"
       @request="request"
     >
@@ -174,7 +176,7 @@ export default {
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
     columns: {
-      type: Array, default: [], validator: formatForPostValidator
+      type: Array, default: () => ([]), validator: formatForPostValidator
     },
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
@@ -206,16 +208,6 @@ export default {
      * @link https://github.com/axios/axios#response-schema
      */
     listIndex: { type: Function, required: true },
-    /** The message on dialog to confirm deletation */
-    msgDelete: { type: [String, Function], default: 'Delete item ?' },
-    /** The message on notification of succesfull delete */
-    msgDeleteSucess: { type: [String, Function], default: 'Deleted with sucess!' },
-    /** The message on notification of succesfull create */
-    msgCreatedSucess: { type: [String, Function], default: 'Created!' },
-    /** The message on notification of succesfull update */
-    msgUpdatedSucess: { type: [String, Function], default: 'Updated!' },
-    /** The message on dialog of canceled action */
-    msgCanceledAction: { type: [String, Function], default: 'Canceled ...' },
     /** The function to allow user select the row 
      * @example selectableRule (row) { return row.status === 'ACTIVE' }
      */
@@ -246,6 +238,10 @@ export default {
      * @link https://quasar.dev/vue-components/table#pagination
      */
     paginationTotalIndex: { type: String, default: 'total' },
+    /** Define if pagination will be server side */
+    paginationServerSide: { type: Boolean, default: true },
+    /** The message on dialog to confirm deletation */
+    msgDelete: { type: [String, Function], default: 'Delete item ?' },
     /** The title of modal delete */
     titleDelete: { type: [String, Function], default: 'Delete' },
   },
@@ -258,7 +254,6 @@ export default {
     pagination: {
       page: 1,
       rowsPerPage: 1,
-      rowsNumber: 1,
       descending: false,
       sortBy: ''
     }
@@ -268,7 +263,10 @@ export default {
       return this.columns.filter(column => column.showCreate)
     },
     apiUri () {
-      return `${this.api}?${this.paginationPageIndex}=${this.pagination.page}&${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
+        `${this.paginationPageIndex}=${this.pagination.page}&` +
+        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -277,7 +275,7 @@ export default {
       let list = this.columns
         .filter(column => column.value !== null && column.value !== '')
         .map(column => ({
-          [column.name]: column.formatForPost ? column.formatForPost(column.value) : column.value
+          [column.name]: column.hasOwnProperty('formatForPost') ? column.formatForPost(column.value) : column.value
         }))
       return Object.assign({}, ...list)
     },
@@ -292,6 +290,12 @@ export default {
     },
     fieldsWithValidation () {
       return this.columns.filter(column => column.rules)
+    },
+    titleDeleteForShow () {
+      return typeof this.titleDelete === 'function' ? this.titleDelete(this.selected[0]) : this.titleDelete
+    },
+    messageDeleteForShow () {
+      return typeof this.msgDelete === 'function' ? this.msgDelete(this.selected[0]) : this.msgDelete
     }
   },
   watch: {
@@ -303,6 +307,9 @@ export default {
   },
   created () {
     this.pagination.rowsPerPage = this.rowsPerPage
+    if (this.paginationServerSide) {
+      this.pagination.rowsNumber = 1
+    }
   },
   mounted () {
     if (this.getOnStart) {
@@ -322,44 +329,32 @@ export default {
       this.modalOpened = !this.modalOpened
     },
     toggleConfirmDelete () {
-      Dialog.create({
-        title: typeof this.titleDelete === 'function' ? this.titleDelete(this.selected[0]) : this.titleDelete,
-        message: typeof this.msgDelete === 'function' ? this.msgDelete(this.selected[0]) : this.msgDelete,
-        ok: 'Sim',
-        cancel: 'Não'
-      }).onOk(() => {
-        this.delete()
-      }).onCancel(() => {
-        Notify.create(this.msgCanceledAction)
-      })
+      Dialog.create({ title: this.titleDeleteForShow, message: this.messageDeleteForShow, ok: 'Yes', cancel: 'No' })
+        .onOk(() => {
+          this.delete()
+        }).onCancel(() => {
+          Notify.create(this.msgCanceledAction)
+        })
     },
     get () {
-      let page = Object.assign(this.pagination.page, '')
-      let withParams = this.params ? `${this.api}?${this.params}&` : `${this.api}?`
-      let url = withParams +
-        `${this.paginationPageIndex}=${page}&` +
-        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
-        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}&`
-
       this.loading = true
-      this.http.get(url)
+      this.http.get(this.apiUri)
         .then(response => {
+          /**
+          *  $emit('successOnGet', response) on sucefull get request.
+          */
+          this.$emit('successOnGet', response)
           this.response = this.listIndex(response.data)
-          this.pagination.rowsPerPage = response.data[this.paginationRowsPerPageIndex] || this.rowsPerPage
-          if (response.data[this.paginationTotalIndex]) {
-            this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
-            this.$refs.table.setPagination(this.pagination)
-          } else {
-            delete this.pagination.rowsNumber
-          }
+          this.organizePagination(response)
 
-          this.loading = false
         })
         .catch(error => {
           /**
            *  Emit the ERROR Object of axios catch.
            */
-          this.$emit('error', error)
+          this.$emit('errorOnGet', error)
+        })
+        .finally(() => {
           this.loading = false
         })
     },
@@ -368,15 +363,19 @@ export default {
       this.http.delete(`${this.api}/${this.selected[0].id}`)
         .then(response => {
           this.get()
-          Notify.create({ type: 'negative', message: typeof this.msgDeleteSucess === 'function' ? this.msgDeleteSucess(this.selected[0]) : this.msgDeleteSucess })
+          /**
+           *  $emit('successOnDelete', selected) on sucefull delete request.
+           */
+          this.$emit('successOnDelete', this.selected)
           this.selected = []
-          this.loading = false
         })
         .catch(error => {
           /**
-           *  Emit the ERROR Object of axios catch.
+           *  $emit('errorOnDelete', error) Object of axios catch.
            */
-          this.$emit('error', error)
+          this.$emit('errorOnDelete', error)
+        })
+        .finally(() => {
           this.loading = false
         })
     },
@@ -397,16 +396,19 @@ export default {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
           this.get()
-          this.loading = false
-          Notify.create({ type: 'positive', message: this.msgCreatedSucess })
           /**
-           *  Emit the response Object of axios on sucefull created request.
+           *  $emit('successOnPost', selected) on sucefull created request.
            */
-          this.$emit('created', response)
+          this.$emit('successOnPost', this.selected)
           this.toggleModal()
         })
         .catch(error => {
-          Notify.create('error', error)
+          /**
+          *  $emit('errorOnDelete', error) Object of axios catch.
+          */
+          this.$emit('errorOnPost', error)
+        })
+        .finally(() => {
           this.loading = false
         })
     },
@@ -414,40 +416,40 @@ export default {
       this.http.put(`${this.api}/${this.selected[0].id}`, this.objectToSave)
         .then(response => {
           this.get()
-          Notify.create({ type: 'positive', message: this.msgUpdatedSucess })
-          this.loading = false
           /**
-           *  Emit the response Object of axios on sucefull updated request.
+           *  $emit('successOnPut', selected) on sucefull update request.
            */
-          this.$emit('updated', response)
+          this.$emit('successOnPut', this.selected)
           this.toggleModal()
         })
         .catch(error => {
-          console.log(error)
-          Notify.create(error)
+          /**
+        *  $emit('errorOnPut', error) Object of axios catch.
+        */
+          this.$emit('errorOnPut', error)
+        })
+        .finally(() => {
           this.loading = false
         })
     },
-    request ({ pagination, filter }) {
+    request ({ pagination }) {
       this.pagination = pagination
-
-      if (pagination.rowsPerPage === 0) {
-        this.pagination.rowsPerPage = 200
-      }
 
       this.get()
     },
     populateColumnsWithSelectedRow () {
       this.columns.forEach(column => {
         if (column.type === 'QOptionGroup') {
-          column.value = this.selected[0][column.name] ? this.selected[0][column.name].split('') : ['TODOS']
+          column.value = this.selected[0][column.name] ? this.selected[0][column.name].split('') : ['ALL']
           return
         }
         column.value = this.selected[0][column.name]
       })
     },
     resetValitation () {
-      this.fieldsWithValidation.forEach(field => this.$refs[field.name][0].validate())
+      this.fieldsWithValidation
+        .filter(field => this.$refs[field.name].hasOwnProperty('rule'))
+        .forEach(field => this.$refs[field.name][0].validate())
     },
     resetColumnsValues () {
       this.columns.forEach(column => {
@@ -471,10 +473,10 @@ export default {
       }
       )
     },
-    validateFormatFunctionForColumn (column) {
-      console.log(column.formatForPost && typeof column.formatForPost !== 'function');
-
-      return column
+    organizePagination (response) {
+      if (response.data[this.paginationTotalIndex]) {
+        this.pagination.rowsNumber = response.data[this.paginationTotalIndex]
+      }
     },
     selectableRuleDefault (row) {
       return !!row
