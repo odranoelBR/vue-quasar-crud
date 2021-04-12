@@ -10,6 +10,6 @@ jobs:
         with:
           node-version: 12.x
       - uses: actions/checkout@v2
-      - run: cd test && npm install
       - run: cd ui && npm install
-      - run: cd test && npm run test:unit:ci
+      - run: cd test && npm install && npm run test:unit:coverage
+      - run: bash <(curl -s https://codecov.io/bash)
