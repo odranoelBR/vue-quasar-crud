@@ -12,5 +12,4 @@ jobs:
       - uses: actions/checkout@v2
       - run: cd test && npm install
       - run: cd ui && npm install
-      - script: |
-          bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash)
