@@ -110,7 +110,8 @@ export default {
         align: 'left',
         field: 'title',
         sortable: true,
-        type: 'QInput',
+        qComponent: 'QInput',
+        size: '6',
         value: '',
         rules: [val => val && val.length > 0 || 'Please type something'],
         showCreate: true
@@ -122,7 +123,8 @@ export default {
         align: 'completed',
         field: 'title',
         sortable: true,
-        type: 'QInput',
+        size: '2',
+        qComponent: 'QInput',
         value: '',
         rules: [val => val && val.length > 0 || 'Please type something'],
         showCreate: true

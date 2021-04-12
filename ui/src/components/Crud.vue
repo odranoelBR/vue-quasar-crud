@@ -107,19 +107,9 @@
             >
               <component
                 v-model="column.value"
-                :is="column.type"
-                :mask="column.type == 'QInput' && column.mask ? column.mask : ''"
-                :type="column.subType"
-                :name="column.name"
-                :float-label="column.label"
-                :label="column.label"
-                :options="column.options"
-                :inline="column.inline"
-                :disable="column.disabled"
-                :rules="column.rules"
+                :is="column.qComponent"
                 :ref="column.name"
-                filter
-                left-label
+                v-bind="column"
               />
             </div>
           </div>
