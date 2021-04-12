@@ -37,14 +37,14 @@
         <crud
           :columns.sync="columns"
           :http="axios"
-          :list-index="list => list.items"
+          :list-index="list => list.jogos"
           :can-delete="false"
           :can-create="false"
           :selectable-rule="item => item.completed"
           :rows-per-page="3"
           :pagination-server-side="false"
           @successOnPut="notifyUpdate"
-          api="wanted/v1/list"
+          api="jogos"
           title="Tasks"
           row-key="id"
         />
@@ -77,7 +77,7 @@ export default {
     Crud
   },
   created () {
-    this.axios = axios.create({ baseURL: 'https://api.fbi.gov/' })
+    this.axios = axios.create({ baseURL: 'https://www.ludopedia.com.br/api/v1/' })
   },
   data: () => ({
     alive: true,
