@@ -59,6 +59,20 @@
           <q-tab-example-five />
         </q-card-section>
       </q-card>
+
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Complete </div>
+          <div class="text-subtitle2">Notify on update</div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-six />
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -68,10 +82,11 @@ import QTabExampleTwo from '@components/QTabExampleTwo'
 import QTabExampleThree from '@components/QTabExampleThree'
 import QTabExampleFour from '@components/QTabExampleFour'
 import QTabExampleFive from '@components/QTabExampleFive'
+import QTabExampleSix from '@components/QTabExampleSix'
 
 export default {
   components: {
-    QTabExampleTwo, QTabExampleThree, QTabExampleFour, QTabExampleFive
+    QTabExampleTwo, QTabExampleThree, QTabExampleFour, QTabExampleFive, QTabExampleSix
   }
 }
 </script>

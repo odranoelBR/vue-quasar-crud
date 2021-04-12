@@ -101,7 +101,7 @@
         <q-card-section>
           <div class="row q-col-gutter-xs">
             <div
-              v-for="(column, index) in filteredColumns"
+              v-for="(column, index) in columnsToRender"
               :key="index"
               :class="`col-${column.size}`"
             >
@@ -249,8 +249,14 @@ export default {
     }
   }),
   computed: {
-    filteredColumns () {
+    columnsToRender () {
+      return this.someSelected ? this.filteredColumnsForUpdate : this.filteredColumnsForCreate
+    },
+    filteredColumnsForCreate () {
       return this.columns.filter(column => column.showCreate)
+    },
+    filteredColumnsForUpdate () {
+      return this.columns.filter(column => column.showUpdate)
     },
     apiUri () {
       return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +

@@ -37,9 +37,15 @@
         <crud
           :columns.sync="columns"
           :http="axios"
-          :list-index="list => list.data"
-          api="api/users"
-          title="Emails"
+          :list-index="list => list.items"
+          :can-delete="false"
+          :can-create="false"
+          :selectable-rule="item => item.completed"
+          :rows-per-page="3"
+          :pagination-server-side="false"
+          @successOnPut="notifyUpdate"
+          api="wanted/v1/list"
+          title="Tasks"
           row-key="id"
         />
       </q-tab-panel>
@@ -64,52 +70,65 @@
 <script>
 import Crud from '../../../src/components/Crud'
 import axios from 'axios'
+import { Notify } from 'quasar'
 
 export default {
   components: {
     Crud
   },
   created () {
-    this.axios = axios.create({ baseURL: 'https://reqres.in/' })
+    this.axios = axios.create({ baseURL: 'https://api.fbi.gov/' })
   },
   data: () => ({
+    alive: true,
+    completed: null,
     tab: 'example',
     axios: null,
     code: `<crud
  :columns.sync="columns"
  :http="axios"
- :list-index="list => list.data"
- api="api/users"
- title="Emails"
+ :list-index="list => list"
+ :can-delete="false"
+ :can-create="false"
+ :selectable-rule="item => item.completed"
+ :rows-per-page="3"
+ :pagination-server-side="false"
+ @successOnPut="notifyUpdate"
+ params="completed=true"
+ api="todos"
+ title="Tasks"
  row-key="id"
 />`,
     columns: [
       {
-        name: 'first_name',
+        name: 'title',
         required: true,
-        label: 'Name',
+        label: 'Title',
         align: 'left',
-        field: 'first_name',
+        field: 'title',
         sortable: true,
         qComponent: 'QInput',
-        value: '',
+        type: 'textarea',
         size: '6',
+        value: '',
         rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true,
-        showUpdate: true
+        showCreate: true
       },
       {
-        name: 'email',
+        name: 'completed',
         required: true,
-        label: 'Email',
-        align: 'center',
-        field: 'email',
+        label: 'Done ?',
+        align: 'completed',
+        field: 'title',
         sortable: true,
-        qComponent: 'QInput',
+        qComponent: 'QSelect',
+        options: [
+          { label: 'Yes', value: true },
+          { label: 'No', value: false }
+        ],
         value: '',
-        size: '6',
-        showCreate: true,
-        showUpdate: true
+        size: '4',
+        showCreate: true
       }
     ]
   }),
@@ -118,6 +137,11 @@ export default {
       let columns = JSON.parse(JSON.stringify(this.columns))
       columns[0].rules = '[val => val && val.length > 0 || "Please type something"]'
       return 'columns: ' + JSON.stringify(columns, null, 2)
+    }
+  },
+  methods: {
+    notifyUpdate () {
+      Notify.create({ type: 'positive', message: 'Update successful!' })
     }
   }
 }
