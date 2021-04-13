@@ -64,6 +64,7 @@
         <q-card-section class="bg-grey-9 text-white">
           <div class="text-h6">Custom pagination indexes </div>
           <div class="text-subtitle2">Custom columns ( from QTable)</div>
+          <div class="text-subtitle2">Custom icons</div>
         </q-card-section>
         <q-separator
           dark

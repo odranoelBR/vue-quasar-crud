@@ -42,6 +42,8 @@
           @successOnPut="notifyUpdate"
           pagination-rows-per-page-index="limit"
           pagination-sort-index="sortBy"
+          icon-delete="block"
+          item-name="recibo"
           api="games"
           row-key="id"
         >
