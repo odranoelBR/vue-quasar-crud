@@ -113,7 +113,7 @@ export default {
         size: '6',
         value: '',
         rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        showUpdate: true
       },
       {
         name: 'completed',
@@ -129,7 +129,7 @@ export default {
         ],
         value: '',
         size: '4',
-        showCreate: true
+        showUpdate: true
       }
     ]
   }),
