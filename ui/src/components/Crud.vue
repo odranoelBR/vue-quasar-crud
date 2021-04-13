@@ -32,7 +32,7 @@
             >
               <slot
                 :row="props.row"
-                :name="column.name"
+                :name="`body-cell-${column.name}`"
               />
             </q-td>
             <q-td
@@ -259,10 +259,13 @@ export default {
       return this.columns.filter(column => column.showUpdate)
     },
     apiUri () {
-      return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
-        `${this.paginationPageIndex}=${this.pagination.page}&` +
-        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
-        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      if (this.paginationServerSide) {
+        return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
+          `${this.paginationPageIndex}=${this.pagination.page}&` +
+          `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+          `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      }
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}?`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'

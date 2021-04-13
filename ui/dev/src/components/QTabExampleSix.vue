@@ -37,17 +37,21 @@
         <crud
           :columns.sync="columns"
           :http="axios"
-          :list-index="list => list.jogos"
-          :can-delete="false"
-          :can-create="false"
-          :selectable-rule="item => item.completed"
-          :rows-per-page="3"
-          :pagination-server-side="false"
+          :list-index="list => list"
+          :rows-per-page="5"
           @successOnPut="notifyUpdate"
-          api="jogos"
-          title="Tasks"
+          pagination-rows-per-page-index="limit"
+          pagination-sort-index="sortBy"
+          api="games"
           row-key="id"
-        />
+        >
+          <template
+            v-slot:body-cell-img="props"
+            :props="props"
+          >
+            <q-img :src="props.row.img" />
+          </template>
+        </crud>
       </q-tab-panel>
 
       <q-tab-panel name="template">
@@ -77,9 +81,10 @@ export default {
     Crud
   },
   created () {
-    this.axios = axios.create({ baseURL: 'https://www.ludopedia.com.br/api/v1/' })
+    this.axios = axios.create({ baseURL: 'https://6075f3480baf7c0017fa7551.mockapi.io/api/v1/' })
   },
   data: () => ({
+    oauthCode: null,
     alive: true,
     completed: null,
     tab: 'example',
@@ -88,47 +93,49 @@ export default {
  :columns.sync="columns"
  :http="axios"
  :list-index="list => list"
- :can-delete="false"
- :can-create="false"
- :selectable-rule="item => item.completed"
  :rows-per-page="3"
- :pagination-server-side="false"
  @successOnPut="notifyUpdate"
- params="completed=true"
- api="todos"
- title="Tasks"
+ pagination-rows-per-page-index="limit"
+ pagination-sort-index="sortBy"
+ api="games"
  row-key="id"
 />`,
     columns: [
       {
-        name: 'title',
+        name: 'name',
         required: true,
-        label: 'Title',
+        label: 'Name',
         align: 'left',
-        field: 'title',
+        field: 'name',
         sortable: true,
         qComponent: 'QInput',
-        type: 'textarea',
         size: '6',
         value: '',
-        rules: [val => val && val.length > 0 || 'Please type something'],
         showCreate: true
       },
       {
-        name: 'completed',
+        name: 'birth',
         required: true,
-        label: 'Done ?',
-        align: 'completed',
-        field: 'title',
+        label: 'Birth',
+        align: 'center',
+        field: 'birth',
         sortable: true,
-        qComponent: 'QSelect',
-        options: [
-          { label: 'Yes', value: true },
-          { label: 'No', value: false }
-        ],
+        qComponent: 'QInput',
         value: '',
         size: '4',
         showCreate: true
+      },
+      {
+        name: 'img',
+        required: true,
+        label: 'Img',
+        align: 'center',
+        field: 'img',
+        qComponent: 'QInput',
+        value: '',
+        size: '4',
+        showCreate: true,
+        customize: true
       }
     ]
   }),

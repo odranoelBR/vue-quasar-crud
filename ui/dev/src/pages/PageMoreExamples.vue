@@ -62,8 +62,8 @@
 
       <q-card class="q-mb-lg">
         <q-card-section class="bg-grey-9 text-white">
-          <div class="text-h6">Complete </div>
-          <div class="text-subtitle2">Notify on update</div>
+          <div class="text-h6">Custom pagination indexes </div>
+          <div class="text-subtitle2">Custom columns ( from QTable)</div>
         </q-card-section>
         <q-separator
           dark
