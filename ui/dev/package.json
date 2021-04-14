@@ -10,7 +10,7 @@
     "dev:ios": "quasar dev -m ios",
     "dev:android": "quasar dev -m android",
     "dev:electron": "quasar dev -m electron",
-    "build": "quasar build"
+    "build": "node_modules/.bin/quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
