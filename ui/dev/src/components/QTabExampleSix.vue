@@ -34,46 +34,30 @@
         name="example"
         ref="panel"
       >
-        <fieldset class="text-blue">
-          <legend>Filter form</legend>
-          <div class="row justify-between q-col-gutter-sm">
-
-            <div class="col-4">
-              <q-select
-                v-model="completed"
-                emit-value
-                map-options
-                label="Choose task status"
-                :options="options"
-              />
-            </div>
-            <div class="col-4">
-              <q-btn
-                color="warning"
-                @click="reset"
-              >
-                Reset
-              </q-btn>
-            </div>
-          </div>
-        </fieldset>
-
         <crud
-          v-if="alive"
           :columns.sync="columns"
           :http="axios"
           :list-index="list => list"
-          :can-create="false"
-          :can-edit="false"
-          :get-on-start="false"
-          :get-on-param-change="true"
+          :rows-per-page="5"
           :pagination-server-side="false"
-          @successOnDelete="notifyDeleted"
-          :params="`completed=${completed}`"
-          api="todos"
-          title="Tasks"
+          @successOnPut="notifyUpdate"
+          pagination-rows-per-page-index="limit"
+          pagination-sort-index="sortBy"
+          icon-update="brush"
+          icon-delete="block"
+          icon-create="post_add"
+          modal-text-title-create="Creating a new game"
+          modal-text-title-update="Updating game"
+          api="games"
           row-key="id"
-        />
+        >
+          <template
+            v-slot:body-cell-img="props"
+            :props="props"
+          >
+            <q-img :src="`${props.row.img}?random=${props.row.id}`" />
+          </template>
+        </crud>
       </q-tab-panel>
 
       <q-tab-panel name="template">
@@ -97,61 +81,74 @@
 import Crud from '../../../src/components/Crud'
 import axios from 'axios'
 import { Notify } from 'quasar'
+
 export default {
   components: {
     Crud
   },
   created () {
-    this.axios = axios.create({ baseURL: 'https://jsonplaceholder.typicode.com/' })
+    this.axios = axios.create({ baseURL: 'https://6075f3480baf7c0017fa7551.mockapi.io/api/v1/' })
   },
   data: () => ({
+    oauthCode: null,
     alive: true,
     completed: null,
-    options: [
-      { label: 'Yes', value: true },
-      { label: 'No', value: false }
-    ],
     tab: 'example',
     axios: null,
     code: `<crud
  :columns.sync="columns"
  :http="axios"
- :list-index="list => list.data"
- :can-create="false"
- :can-edit="false"
- :get-on-start="false"
- :get-on-param-change="true"
+ :list-index="list => list"
+ :rows-per-page="5"
  :pagination-server-side="false"
- @successOnDelete="notifyDeleted"
- :params="\`completed=\${completed}\`"
- api="api/users"
- title="Emails"
+ @successOnPut="notifyUpdate"
+ pagination-rows-per-page-index="limit"
+ pagination-sort-index="sortBy"
+ icon-update="brush"
+ icon-delete="block"
+ icon-create="post_add"
+ modal-text-title-create="Creating a new game"
+ modal-text-title-update="Updating game"
+ api="games"
  row-key="id"
 />`,
     columns: [
       {
-        name: 'title',
+        name: 'name',
         required: true,
-        label: 'Title',
+        label: 'Name',
         align: 'left',
-        field: 'title',
+        field: 'name',
         sortable: true,
         qComponent: 'QInput',
+        size: '6',
         value: '',
-        rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        showCreate: true,
+        showUpdate: true,
       },
       {
-        name: 'completed',
+        name: 'birth',
         required: true,
-        label: 'Done ?',
-        align: 'completed',
-        field: 'title',
+        label: 'Birth',
+        align: 'center',
+        field: 'birth',
         sortable: true,
         qComponent: 'QInput',
         value: '',
-        rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        size: '4',
+        showCreate: true,
+        showUpdate: true,
+      },
+      {
+        name: 'img',
+        required: true,
+        label: 'Img',
+        align: 'center',
+        field: 'img',
+        qComponent: 'QInput',
+        value: '',
+        size: '4',
+        customize: true
       }
     ]
   }),
@@ -163,15 +160,8 @@ export default {
     }
   },
   methods: {
-    reset () {
-      this.completed = null
-      this.alive = false
-      setTimeout(() => {
-        this.alive = true
-      }, 1000);
-    },
-    notifyDeleted () {
-      Notify.create({ type: 'negative', message: 'Succes on lock!' })
+    notifyUpdate () {
+      Notify.create({ type: 'positive', message: 'Update successful!' })
     }
   }
 }

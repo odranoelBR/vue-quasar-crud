@@ -6,7 +6,7 @@ module.exports = {
   // verbose: true,
   // watch: true,
   collectCoverage: false,
-  coverageReporters: ["json", "lcov", "text", "clover", "cobertura", "json-summary", "text-lcov"],
+  coverageReporters: ["json", "lcov", "text", "clover"],
   coverageDirectory: '<rootDir>test/jest/coverage',
   collectCoverageFrom: [
     '<rootDir>/ui/src/components/**/*.(js|vue)'

@@ -34,42 +34,17 @@
         name="example"
         ref="panel"
       >
-        <fieldset class="text-blue">
-          <legend>Filter form</legend>
-          <div class="row justify-between q-col-gutter-sm">
-
-            <div class="col-4">
-              <q-select
-                v-model="completed"
-                emit-value
-                map-options
-                label="Choose task status"
-                :options="options"
-              />
-            </div>
-            <div class="col-4">
-              <q-btn
-                color="warning"
-                @click="reset"
-              >
-                Reset
-              </q-btn>
-            </div>
-          </div>
-        </fieldset>
-
         <crud
-          v-if="alive"
           :columns.sync="columns"
           :http="axios"
           :list-index="list => list"
+          :can-delete="false"
           :can-create="false"
-          :can-edit="false"
-          :get-on-start="false"
-          :get-on-param-change="true"
+          :selectable-rule="item => item.completed"
+          :rows-per-page="3"
           :pagination-server-side="false"
-          @successOnDelete="notifyDeleted"
-          :params="`completed=${completed}`"
+          @successOnPut="notifyUpdate"
+          params="completed=true"
           api="todos"
           title="Tasks"
           row-key="id"
@@ -97,6 +72,7 @@
 import Crud from '../../../src/components/Crud'
 import axios from 'axios'
 import { Notify } from 'quasar'
+
 export default {
   components: {
     Crud
@@ -107,25 +83,21 @@ export default {
   data: () => ({
     alive: true,
     completed: null,
-    options: [
-      { label: 'Yes', value: true },
-      { label: 'No', value: false }
-    ],
     tab: 'example',
     axios: null,
     code: `<crud
  :columns.sync="columns"
  :http="axios"
- :list-index="list => list.data"
+ :list-index="list => list"
+ :can-delete="false"
  :can-create="false"
- :can-edit="false"
- :get-on-start="false"
- :get-on-param-change="true"
+ :selectable-rule="item => item.completed"
+ :rows-per-page="3"
  :pagination-server-side="false"
- @successOnDelete="notifyDeleted"
- :params="\`completed=\${completed}\`"
- api="api/users"
- title="Emails"
+ @successOnPut="notifyUpdate"
+ params="completed=true"
+ api="todos"
+ title="Tasks"
  row-key="id"
 />`,
     columns: [
@@ -137,9 +109,11 @@ export default {
         field: 'title',
         sortable: true,
         qComponent: 'QInput',
+        type: 'textarea',
+        size: '6',
         value: '',
         rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        showUpdate: true
       },
       {
         name: 'completed',
@@ -148,10 +122,14 @@ export default {
         align: 'completed',
         field: 'title',
         sortable: true,
-        qComponent: 'QInput',
+        qComponent: 'QSelect',
+        options: [
+          { label: 'Yes', value: true },
+          { label: 'No', value: false }
+        ],
         value: '',
-        rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        size: '4',
+        showUpdate: true
       }
     ]
   }),
@@ -163,15 +141,8 @@ export default {
     }
   },
   methods: {
-    reset () {
-      this.completed = null
-      this.alive = false
-      setTimeout(() => {
-        this.alive = true
-      }, 1000);
-    },
-    notifyDeleted () {
-      Notify.create({ type: 'negative', message: 'Succes on lock!' })
+    notifyUpdate () {
+      Notify.create({ type: 'positive', message: 'Update successful!' })
     }
   }
 }
