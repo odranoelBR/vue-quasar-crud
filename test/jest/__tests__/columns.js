@@ -21,7 +21,6 @@ export default [
     field: 'email',
     sortable: true,
     qComponent: 'QInput',
-    static: true,
     value: '',
     size: '6',
     showCreate: true,
