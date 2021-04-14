@@ -32,7 +32,7 @@ test('all columns enabled to create', () => {
     propsData: defaultPropsData()
   })
 
-  expect(wrapper.vm.filteredColumns).toHaveLength(2)
+  expect(wrapper.vm.columnsToRender).toHaveLength(2)
 })
 
 test('at least one row was selected', () => {
@@ -159,7 +159,7 @@ test('only email column are visible to create', () => {
     propsData: props
   })
 
-  expect(wrapper.vm.filteredColumns).toHaveLength(1)
+  expect(wrapper.vm.columnsToRender).toHaveLength(1)
 })
 
 test('api url mounting defalt mouting', () => {
@@ -378,6 +378,7 @@ test('post $emit successOnPost event', async () => {
 
 test('reset validation when saving with validation errors, dont make requests', () => {
 
+  axios.get.mockResolvedValue(returnData);
   axios.post.mockResolvedValue([]);
   axios.put.mockResolvedValue([]);
 
@@ -385,6 +386,9 @@ test('reset validation when saving with validation errors, dont make requests', 
   const wrapper = mountQuasar(Crud, {
     propsData: props
   })
+
+  wrapper.setData({ selected: [returnData[0]] })
+
   const spyOnResetValidation = jest.spyOn(wrapper.vm, 'resetValitation')
   const spyOnPost = jest.spyOn(wrapper.vm, 'post')
   const spyOnPut = jest.spyOn(wrapper.vm, 'put')

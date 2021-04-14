@@ -3,21 +3,77 @@
     padding
     class="row justify-center"
   >
-    <div class="col-8 ">
-      <q-markdown src="> Can only delete. Ex: The resource has soft delete" />
-      <q-tab-example-two />
+    <div class="col-8">
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Can only delete. </div>
+          <div class="text-subtitle2">Ex: The resource has soft delete</div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-two />
+        </q-card-section>
+      </q-card>
 
-      <q-markdown
-        src="> Only fetch after user select. (using form outside of table to filter requests) "
-        class="q-pt-xl"
-      />
-      <q-tab-example-three />
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Only fetch after user select. </div>
+          <div class="text-subtitle2">Using form outside of table to filter requests</div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-three />
+        </q-card-section>
+      </q-card>
 
-      <q-markdown
-        src="> Rule to edit only the completed tasks. "
-        class="q-pt-xl"
-      />
-      <q-tab-example-four />
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Rule to edit only the completed tasks. </div>
+          <div class="text-subtitle2"></div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-four />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Changing types of form for edit / create </div>
+          <div class="text-subtitle2">Notify on update</div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-five />
+        </q-card-section>
+      </q-card>
+
+      <q-card class="q-mb-lg">
+        <q-card-section class="bg-grey-9 text-white">
+          <div class="text-h6">Custom pagination indexes </div>
+          <div class="text-subtitle2">Custom columns ( from QTable)</div>
+          <div class="text-subtitle2">Custom icons</div>
+        </q-card-section>
+        <q-separator
+          dark
+          inset
+        />
+        <q-card-section class="no-padding">
+          <q-tab-example-six />
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -26,10 +82,12 @@
 import QTabExampleTwo from '@components/QTabExampleTwo'
 import QTabExampleThree from '@components/QTabExampleThree'
 import QTabExampleFour from '@components/QTabExampleFour'
+import QTabExampleFive from '@components/QTabExampleFive'
+import QTabExampleSix from '@components/QTabExampleSix'
 
 export default {
   components: {
-    QTabExampleTwo, QTabExampleThree, QTabExampleFour
+    QTabExampleTwo, QTabExampleThree, QTabExampleFour, QTabExampleFive, QTabExampleSix
   }
 }
 </script>

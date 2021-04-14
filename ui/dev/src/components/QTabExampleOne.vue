@@ -91,11 +91,12 @@ export default {
         align: 'left',
         field: 'first_name',
         sortable: true,
-        type: 'QInput',
+        qComponent: 'QInput',
         value: '',
         size: '6',
         rules: [val => val && val.length > 0 || 'Please type something'],
-        showCreate: true
+        showCreate: true,
+        showUpdate: true
       },
       {
         name: 'email',
@@ -104,11 +105,11 @@ export default {
         align: 'center',
         field: 'email',
         sortable: true,
-        type: 'QInput',
-        formatForPost: '',
+        qComponent: 'QInput',
         value: '',
         size: '6',
-        showCreate: true
+        showCreate: true,
+        showUpdate: true
       }
     ]
   }),

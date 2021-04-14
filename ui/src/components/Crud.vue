@@ -32,7 +32,7 @@
             >
               <slot
                 :row="props.row"
-                :name="column.name"
+                :name="`body-cell-${column.name}`"
               />
             </q-td>
             <q-td
@@ -61,8 +61,8 @@
             class="col"
           >
             <q-btn
-              :color="typeof iconDeleteColor === 'function' ? iconDeleteColor(selected[0]) : iconDeleteColor"
-              :icon="typeof iconDelete === 'function' ? iconDelete(selected[0]) : iconDelete"
+              :color="iconDeleteColor"
+              :icon="iconDelete"
               @click="toggleConfirmDelete()"
             />
           </div>
@@ -72,7 +72,7 @@
           >
             <q-btn
               color="secondary"
-              icon="add"
+              :icon="iconCreate"
               @click="toggleModal()"
             />
           </div>
@@ -82,7 +82,7 @@
           >
             <q-btn
               color="secondary"
-              icon="edit"
+              :icon="iconUpdate"
               @click="toggleModalWithData()"
             />
           </div>
@@ -101,25 +101,15 @@
         <q-card-section>
           <div class="row q-col-gutter-xs">
             <div
-              v-for="(column, index) in filteredColumns"
+              v-for="(column, index) in columnsToRender"
               :key="index"
               :class="`col-${column.size}`"
             >
               <component
                 v-model="column.value"
-                :is="column.type"
-                :mask="column.type == 'QInput' && column.mask ? column.mask : ''"
-                :type="column.subType"
-                :name="column.name"
-                :float-label="column.label"
-                :label="column.label"
-                :options="column.options"
-                :inline="column.inline"
-                :disable="column.disabled"
-                :rules="column.rules"
+                :is="column.qComponent"
                 :ref="column.name"
-                filter
-                left-label
+                v-bind="column"
               />
             </div>
           </div>
@@ -189,14 +179,18 @@ export default {
      *  @example axios.create({ baseURL: 'https://reqres.in/' })
      */
     http: { type: Function, required: true },
-    /** The icon of delete button 
-     * @link https://quasar.dev/vue-components/button#with-icon
-     */
-    iconDelete: { type: [String, Function], default: 'delete' },
+    /** The icon of delete button  */
+    iconDelete: { type: String, default: 'delete' },
+    /** The icon of create button  */
+    iconCreate: { type: String, default: 'add' },
+    /** The color of edit button */
+    iconUpdate: { type: String, default: 'edit' },
     /** The color of delete button */
-    iconDeleteColor: { type: [String, Function], default: 'negative' },
-    /** The text of title on modal (edit / create) */
-    modalTextTitle: { type: String, default: '' },
+    iconDeleteColor: { type: String, default: 'negative' },
+    /** The text of title on modal create */
+    modalTextTitleCreate: { type: String, default: 'Create new' },
+    /** The text of title on modal update */
+    modalTextTitleUpdate: { type: String, default: 'Update this' },
     /** The component will fetch remote data on mounted hook */
     getOnStart: { type: Boolean, default: true },
     /** The component will fetch remote data on params props change */
@@ -259,14 +253,26 @@ export default {
     }
   }),
   computed: {
-    filteredColumns () {
+    modalTextTitle () {
+      return this.someSelected ? this.modalTextTitleUpdate : this.modalTextTitleCreate
+    },
+    columnsToRender () {
+      return this.someSelected ? this.filteredColumnsForUpdate : this.filteredColumnsForCreate
+    },
+    filteredColumnsForCreate () {
       return this.columns.filter(column => column.showCreate)
     },
+    filteredColumnsForUpdate () {
+      return this.columns.filter(column => column.showUpdate)
+    },
     apiUri () {
-      return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
-        `${this.paginationPageIndex}=${this.pagination.page}&` +
-        `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
-        `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      if (this.paginationServerSide) {
+        return this.params ? `${this.api}?${this.params}&` : `${this.api}?` +
+          `${this.paginationPageIndex}=${this.pagination.page}&` +
+          `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
+          `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
+      }
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}?`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -379,19 +385,6 @@ export default {
           this.loading = false
         })
     },
-    save () {
-      if (this.hasValidationErrors()) {
-        this.resetValitation()
-        return
-      }
-      this.loading = true
-      if (this.selected.length > 0) {
-        this.put()
-        return
-      }
-
-      this.post()
-    },
     post () {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
@@ -432,6 +425,19 @@ export default {
           this.loading = false
         })
     },
+    save () {
+      if (this.hasValidationErrors()) {
+        this.resetValitation()
+        return
+      }
+      this.loading = true
+      if (this.selected.length > 0) {
+        this.put()
+        return
+      }
+
+      this.post()
+    },
     request ({ pagination }) {
       this.pagination = pagination
 
@@ -448,7 +454,7 @@ export default {
     },
     resetValitation () {
       this.fieldsWithValidation
-        .filter(field => this.$refs[field.name].hasOwnProperty('rule'))
+        .filter(field => this.$refs[field.name].hasOwnProperty('rules'))
         .forEach(field => this.$refs[field.name][0].validate())
     },
     resetColumnsValues () {
