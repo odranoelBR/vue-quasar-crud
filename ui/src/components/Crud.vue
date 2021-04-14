@@ -385,19 +385,6 @@ export default {
           this.loading = false
         })
     },
-    save () {
-      if (this.hasValidationErrors()) {
-        this.resetValitation()
-        return
-      }
-      this.loading = true
-      if (this.selected.length > 0) {
-        this.put()
-        return
-      }
-
-      this.post()
-    },
     post () {
       this.http.post(this.api, this.objectToSave)
         .then(response => {
@@ -437,6 +424,19 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    save () {
+      if (this.hasValidationErrors()) {
+        this.resetValitation()
+        return
+      }
+      this.loading = true
+      if (this.selected.length > 0) {
+        this.put()
+        return
+      }
+
+      this.post()
     },
     request ({ pagination }) {
       this.pagination = pagination
