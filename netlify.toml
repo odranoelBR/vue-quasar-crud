@@ -1,4 +1,4 @@
 [build]
   base = "ui"
-  publish = "ui/dev/dist/spa"
+  publish = "dev/dist/spa"
   command = "yarn && cd dev && yarn && yarn build"
