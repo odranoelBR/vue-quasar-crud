@@ -6,8 +6,6 @@ import response from './response.json'
 
 jest.mock('axios');
 
-axios.get.mockResolvedValue([]);
-
 beforeAll(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => { });
   jest.spyOn(console, 'error').mockImplementation(() => { });
@@ -22,11 +20,12 @@ const defaultPropsData = () => ({
 })
 
 let returnData = [
-  { id: 1, first_name: 'Brominator', 'email': 'bro@gmail.com' },
-  { id: 2, first_name: 'Foo f', 'email': 'foo@gmail.com' }
+  { id: 1, first_name: 'Brominator', email: 'bro@gmail.com' },
+  { id: 2, first_name: 'Foo f', email: 'foo@gmail.com' }
 ]
 
 test('all columns enabled to create', () => {
+  axios.get.mockResolvedValueOnce([]);
 
   const wrapper = mountQuasar(Crud, {
     propsData: defaultPropsData()
@@ -36,7 +35,7 @@ test('all columns enabled to create', () => {
 })
 
 test('at least one row was selected', () => {
-  axios.get.mockResolvedValue(returnData);
+  axios.get.mockResolvedValueOnce(returnData);
 
   const wrapper = mountQuasar(Crud, {
     propsData: defaultPropsData()
@@ -47,6 +46,8 @@ test('at least one row was selected', () => {
 })
 
 test('using customSelected slot', () => {
+  axios.get.mockResolvedValueOnce([]);
+
   const wrapper = mountQuasar(Crud, {
     propsData: defaultPropsData(),
     slots: {
@@ -58,6 +59,8 @@ test('using customSelected slot', () => {
 })
 
 test('get fields with validation', () => {
+  axios.get.mockResolvedValueOnce([]);
+
   const props = defaultPropsData()
 
   const wrapper = mountQuasar(Crud, {
@@ -69,8 +72,7 @@ test('get fields with validation', () => {
 })
 
 test('custom message delete with function after user select', () => {
-
-  axios.get.mockResolvedValue(returnData);
+  axios.get.mockResolvedValueOnce(returnData);
 
   const props = defaultPropsData()
   props.msgDelete = row => `Deleted ${row.first_name} ?`
@@ -86,7 +88,7 @@ test('custom message delete with function after user select', () => {
 
 test('custom title delete with function after user select', () => {
 
-  axios.get.mockResolvedValue(returnData);
+  axios.get.mockResolvedValueOnce(returnData);
 
   const props = defaultPropsData()
   props.titleDelete = row => `Do you want delete ${row.first_name} ?`
@@ -103,6 +105,8 @@ test('custom title delete with function after user select', () => {
 
 test('get fields with validation', () => {
 
+  axios.get.mockResolvedValueOnce();
+
   const props = defaultPropsData()
 
   const wrapper = mountQuasar(Crud, {
@@ -117,14 +121,13 @@ test('get fields with validation', () => {
 test('mount component without make requests', () => {
 
   const props = defaultPropsData()
-
   props.getOnStart = false
-
-  const spyOnGet = jest.spyOn(Crud.methods, 'get')
 
   const wrapper = mountQuasar(Crud, {
     propsData: props
   })
+
+  const spyOnGet = jest.spyOn(wrapper.vm, 'get')
 
   expect(spyOnGet).not.toBeCalled()
 })
@@ -136,11 +139,11 @@ test('make a get request ONLY when param change', async () => {
   props.getOnStart = false
   props.getOnParamChange = true
 
-  const spyOnGet = jest.spyOn(Crud.methods, 'get')
-
   const wrapper = mountQuasar(Crud, {
     propsData: props
   })
+
+  const spyOnGet = jest.spyOn(wrapper.vm, 'get')
 
   expect(spyOnGet).not.toBeCalled()
 
@@ -162,7 +165,7 @@ test('only email column are visible to create', () => {
   expect(wrapper.vm.columnsToRender).toHaveLength(1)
 })
 
-test('api url mounting defalt mouting', () => {
+test('api url mounting default mouting', () => {
 
   const props = defaultPropsData()
 
@@ -173,6 +176,20 @@ test('api url mounting defalt mouting', () => {
   })
 
   expect(wrapper.vm.apiUri).toBe('people?page=1&per_page=3&sort=,asc')
+})
+
+test('api url mounting no server side pagination', () => {
+
+  const props = defaultPropsData()
+
+  props.api = 'people'
+  props.paginationServerSide = false
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  expect(wrapper.vm.apiUri).toBe('people')
 })
 
 test('object to save mounting empty', () => {
@@ -261,13 +278,13 @@ test('open modal without data', () => {
   const wrapper = mountQuasar(Crud, {
     propsData: props
   })
-  const spyOnResetColumnsValuesMethod = jest.spyOn(wrapper.vm, 'resetColumnsValues')
+  const spyOnResetColumnValuesMethod = jest.spyOn(wrapper.vm, 'resetColumnValues')
 
   expect(wrapper.vm.modalOpened).toBeFalsy()
   wrapper.vm.toggleModal()
 
   expect(wrapper.vm.modalOpened).toBeTruthy()
-  expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
+  expect(spyOnResetColumnValuesMethod).toHaveBeenCalled()
 })
 test('open modal with data after select a row ', () => {
 
@@ -280,13 +297,13 @@ test('open modal with data after select a row ', () => {
 
   wrapper.setData({ selected: [returnData[0]] })// select a row
 
-  const spyOnResetColumnsValuesMethod = jest.spyOn(wrapper.vm, 'populateColumnsWithSelectedRow')
+  const spyOnPopulateColumnsWithSelectedRow = jest.spyOn(wrapper.vm, 'populateColumnsWithSelectedRow')
 
   expect(wrapper.vm.modalOpened).toBeFalsy()
   wrapper.vm.toggleModalWithData()
 
   expect(wrapper.vm.modalOpened).toBeTruthy()
-  expect(spyOnResetColumnsValuesMethod).toHaveBeenCalled()
+  expect(spyOnPopulateColumnsWithSelectedRow).toHaveBeenCalled()
 })
 
 test('get $emit successOnGet event', async () => {
@@ -322,6 +339,22 @@ test('o succefull get set the total size from api', async () => {
   expect(wrapper.vm.pagination.rowsNumber).toBe(12)
 })
 
+test('get $emit errorOnGet event', async () => {
+
+  axios.get.mockRejectedValue('error msg')
+
+  const props = defaultPropsData()
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  await wrapper.vm.$nextTick()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.emitted().errorOnGet).toBeTruthy()
+})
+
 test('delete $emit successOnDelete event', async () => {
 
   axios.delete.mockResolvedValue();
@@ -340,6 +373,25 @@ test('delete $emit successOnDelete event', async () => {
 
 })
 
+test('delete $emit errorOnDelete event', async () => {
+
+  axios.delete.mockRejectedValue('error msg')
+
+  const props = defaultPropsData()
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[0]] })
+  wrapper.vm.delete()
+
+  await wrapper.vm.$nextTick()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.emitted().errorOnDelete).toBeTruthy()
+})
+
 test('put $emit successOnPut event', async () => {
 
   axios.put.mockResolvedValue();
@@ -350,12 +402,31 @@ test('put $emit successOnPut event', async () => {
     propsData: props
   })
   wrapper.setData({ selected: [returnData[0]] })
+  wrapper.vm.save()
 
-  wrapper.vm.put()
   await wrapper.vm.$nextTick()
 
   expect(wrapper.emitted().successOnPut).toBeTruthy()
 
+})
+
+test('put $emit errorOnPut event', async () => {
+
+  axios.put.mockRejectedValue('error msg')
+
+  const props = defaultPropsData()
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[0]] })
+  wrapper.vm.save()
+
+  await wrapper.vm.$nextTick()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.emitted().errorOnPut).toBeTruthy()
 })
 
 test('post $emit successOnPost event', async () => {
@@ -367,13 +438,30 @@ test('post $emit successOnPost event', async () => {
   const wrapper = mountQuasar(Crud, {
     propsData: props
   })
-  wrapper.setData({ selected: [returnData[0]] })
 
-  wrapper.vm.post()
+  wrapper.vm.save()
   await wrapper.vm.$nextTick()
 
   expect(wrapper.emitted().successOnPost).toBeTruthy()
 
+})
+
+test('post $emit errorOnPost event', async () => {
+
+  axios.post.mockRejectedValue('error msg')
+
+  const props = defaultPropsData()
+
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.vm.save()
+
+  await wrapper.vm.$nextTick()
+  await wrapper.vm.$nextTick()
+
+  expect(wrapper.emitted().errorOnPost).toBeTruthy()
 })
 
 test('reset validation when saving with validation errors, dont make requests', () => {
@@ -439,4 +527,95 @@ test('save start put request because at least one row are selected', () => {
 
   expect(spyOnPut).toBeCalled()
   expect(spyOnPost).not.toBeCalled()
+})
+
+test('request update pagination', () => {
+
+  const props = defaultPropsData()
+  const wrapper = mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.vm.request({ pagination: { page: 5, rowsPerPage: 10 } })
+
+  expect(wrapper.vm.pagination).toStrictEqual({ page: 5, rowsPerPage: 10 })
+})
+
+// test('request fetch remote data', async () => {
+
+//   const props = defaultPropsData()
+//   const wrapper = await mountQuasar(Crud, {
+//     propsData: props
+//   })
+
+
+//   const spyOnGet = jest.spyOn(wrapper.vm, 'get')
+
+//   wrapper.vm.request({ pagination: { page: 5, rowsPerPage: 10 } })
+
+//   await wrapper.vm.$nextTick()
+//   expect(spyOnGet).toHaveBeenCalledTimes(2)
+// })
+
+test('reset column values with proper types (string and array)', async () => {
+
+  returnData[1]['first_name'] = 'boy'
+  returnData[1]['email'] = [{}, {}]
+  axios.get.mockResolvedValue(returnData);
+
+  const props = defaultPropsData()
+
+  const wrapper = await mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[1]] })
+  wrapper.vm.populateColumnsWithSelectedRow()
+  wrapper.vm.resetColumnValues()
+
+  expect(wrapper.vm.columns[0].value).toBe("")
+  expect(wrapper.vm.columns[1].value).toStrictEqual([])
+})
+test('reset column values with proper types ( Boolean and Number)', async () => {
+
+  returnData[1].first_name = 199
+  returnData[1].email = true
+  axios.get.mockResolvedValue(returnData);
+
+  const props = defaultPropsData()
+
+  const wrapper = await mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[1]] })
+  wrapper.vm.populateColumnsWithSelectedRow()
+  wrapper.vm.resetColumnValues()
+
+  expect(wrapper.vm.columns[0].value).toBe(0)
+  expect(wrapper.vm.columns[1].value).toBe("")
+})
+
+test('reset column values static config', async () => {
+
+  returnData[1].first_name = 'Brother Lee'
+  axios.get.mockResolvedValue(returnData);
+
+  const props = defaultPropsData()
+  props.columns[0].static = true
+
+  const wrapper = await mountQuasar(Crud, {
+    propsData: props
+  })
+
+  wrapper.setData({ selected: [returnData[1]] })
+
+  expect(wrapper.vm.columns[0].value).toStrictEqual("")
+
+  wrapper.vm.populateColumnsWithSelectedRow()
+  expect(wrapper.vm.columns[0].value).toStrictEqual("Brother Lee")
+
+  wrapper.vm.resetColumnValues()
+  expect(wrapper.vm.columns[0].value).toStrictEqual("Brother Lee")
+
 })
