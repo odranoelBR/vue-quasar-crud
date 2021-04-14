@@ -1,4 +1,4 @@
 [build]
-  base = "ui/dev"
+  base = "ui"
   publish = "ui/dev/dist/spa"
-  command = "npm run build"
+  command = "yarn && cd dev && yarn && yarn build"
