@@ -18,7 +18,7 @@ Create and register a boot file:
 
 ```js
 npm i quasar-app-extension-crud 
-yar add quasar-app-extension-crud 
+yarn add quasar-app-extension-crud 
 ```
 
 ```js

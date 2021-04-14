@@ -9,10 +9,6 @@
         toc
       />
       <q-tab-example-one />
-      <q-markdown
-        :src="doc"
-        toc
-      />
     </div>
 
   </q-page>
@@ -20,15 +16,13 @@
 
 <script>
 import markdown from 'assets/getting_started.md'
-import doc from '../../../src/components/Crud.md'
 import QTabExampleOne from '@components/QTabExampleOne'
 export default {
   components: {
     QTabExampleOne
   },
   data: () => ({
-    markdown,
-    doc
+    markdown
   })
 
 }

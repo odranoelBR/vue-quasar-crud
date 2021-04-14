@@ -23,7 +23,7 @@ quasar ext remove crud
 ```
 
 ## Demo 
-Coming...
+https://vue-quasar-crud.netlify.app/
 
 ## Infos
 * Using Quasar default quasar extesion template
