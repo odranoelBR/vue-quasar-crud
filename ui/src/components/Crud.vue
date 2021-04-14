@@ -166,7 +166,7 @@ export default {
      * @link https://quasar.dev/vue-components/table#defining-the-columns
      */
     columns: {
-      type: Array, default: () => ([]), validator: formatForPostValidator
+      type: Array, default: () => ([]), validator: formatForPostValidator, required: true
     },
     createRule: { type: Boolean, default: true },
     /** Enable / Disable POST http creation of resource */
@@ -272,7 +272,7 @@ export default {
           `${this.paginationRowsPerPageIndex}=${this.pagination.rowsPerPage}&` +
           `${this.paginationSortIndex}=${this.pagination.sortBy},${this.sortDirection}`
       }
-      return this.params ? `${this.api}?${this.params}&` : `${this.api}?`
+      return this.params ? `${this.api}?${this.params}&` : `${this.api}`
     },
     sortDirection () {
       return this.pagination.descending ? 'desc' : 'asc'
@@ -327,7 +327,7 @@ export default {
       return this.fieldsWithValidation.some(field => this.$refs[field.name][0].hasError)
     },
     toggleModal () {
-      this.resetColumnsValues()
+      this.resetColumnValues()
       this.modalOpened = !this.modalOpened
     },
     toggleModalWithData () {
@@ -457,11 +457,13 @@ export default {
         .filter(field => this.$refs[field.name].hasOwnProperty('rules'))
         .forEach(field => this.$refs[field.name][0].validate())
     },
-    resetColumnsValues () {
+    resetColumnValues () {
       this.columns.forEach(column => {
+
         if (column.static) {
           return
         }
+
         if (column.value instanceof String ||
           column.value instanceof Boolean ||
           typeof (column.value) === 'string' ||
@@ -469,10 +471,12 @@ export default {
           column.value = ''
           return
         }
-        if (column.value instanceof Number) {
+
+        if (typeof (column.value) === 'number') {
           column.value = 0
           return
         }
+
         if (column.value instanceof Array) {
           column.value = []
         }
