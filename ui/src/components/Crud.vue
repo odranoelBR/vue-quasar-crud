@@ -61,8 +61,8 @@
             class="col"
           >
             <q-btn
-              :color="typeof iconDeleteColor === 'function' ? iconDeleteColor(selected[0]) : iconDeleteColor"
-              :icon="typeof iconDelete === 'function' ? iconDelete(selected[0]) : iconDelete"
+              :color="iconDeleteColor"
+              :icon="iconDelete"
               @click="toggleConfirmDelete()"
             />
           </div>
@@ -72,7 +72,7 @@
           >
             <q-btn
               color="secondary"
-              icon="add"
+              :icon="iconCreate"
               @click="toggleModal()"
             />
           </div>
@@ -82,7 +82,7 @@
           >
             <q-btn
               color="secondary"
-              icon="edit"
+              :icon="iconUpdate"
               @click="toggleModalWithData()"
             />
           </div>
@@ -179,14 +179,18 @@ export default {
      *  @example axios.create({ baseURL: 'https://reqres.in/' })
      */
     http: { type: Function, required: true },
-    /** The icon of delete button 
-     * @link https://quasar.dev/vue-components/button#with-icon
-     */
-    iconDelete: { type: [String, Function], default: 'delete' },
+    /** The icon of delete button  */
+    iconDelete: { type: String, default: 'delete' },
+    /** The icon of create button  */
+    iconCreate: { type: String, default: 'add' },
+    /** The color of edit button */
+    iconUpdate: { type: String, default: 'edit' },
     /** The color of delete button */
-    iconDeleteColor: { type: [String, Function], default: 'negative' },
-    /** The text of title on modal (edit / create) */
-    modalTextTitle: { type: String, default: '' },
+    iconDeleteColor: { type: String, default: 'negative' },
+    /** The text of title on modal create */
+    modalTextTitleCreate: { type: String, default: 'Create new' },
+    /** The text of title on modal update */
+    modalTextTitleUpdate: { type: String, default: 'Update this' },
     /** The component will fetch remote data on mounted hook */
     getOnStart: { type: Boolean, default: true },
     /** The component will fetch remote data on params props change */
@@ -249,6 +253,9 @@ export default {
     }
   }),
   computed: {
+    modalTextTitle () {
+      return this.someSelected ? this.modalTextTitleUpdate : this.modalTextTitleCreate
+    },
     columnsToRender () {
       return this.someSelected ? this.filteredColumnsForUpdate : this.filteredColumnsForCreate
     },

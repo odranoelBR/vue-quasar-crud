@@ -39,11 +39,15 @@
           :http="axios"
           :list-index="list => list"
           :rows-per-page="5"
+          :pagination-server-side="false"
           @successOnPut="notifyUpdate"
           pagination-rows-per-page-index="limit"
           pagination-sort-index="sortBy"
+          icon-update="brush"
           icon-delete="block"
-          item-name="recibo"
+          icon-create="post_add"
+          modal-text-title-create="Creating a new game"
+          modal-text-title-update="Updating game"
           api="games"
           row-key="id"
         >
@@ -51,7 +55,7 @@
             v-slot:body-cell-img="props"
             :props="props"
           >
-            <q-img :src="props.row.img" />
+            <q-img :src="`${props.row.img}?random=${props.row.id}`" />
           </template>
         </crud>
       </q-tab-panel>
@@ -95,10 +99,16 @@ export default {
  :columns.sync="columns"
  :http="axios"
  :list-index="list => list"
- :rows-per-page="3"
+ :rows-per-page="5"
+ :pagination-server-side="false"
  @successOnPut="notifyUpdate"
  pagination-rows-per-page-index="limit"
  pagination-sort-index="sortBy"
+ icon-update="brush"
+ icon-delete="block"
+ icon-create="post_add"
+ modal-text-title-create="Creating a new game"
+ modal-text-title-update="Updating game"
  api="games"
  row-key="id"
 />`,
@@ -113,7 +123,8 @@ export default {
         qComponent: 'QInput',
         size: '6',
         value: '',
-        showCreate: true
+        showCreate: true,
+        showUpdate: true,
       },
       {
         name: 'birth',
@@ -125,7 +136,8 @@ export default {
         qComponent: 'QInput',
         value: '',
         size: '4',
-        showCreate: true
+        showCreate: true,
+        showUpdate: true,
       },
       {
         name: 'img',
@@ -136,7 +148,6 @@ export default {
         qComponent: 'QInput',
         value: '',
         size: '4',
-        showCreate: true,
         customize: true
       }
     ]
