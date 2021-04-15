@@ -22,6 +22,7 @@
         <q-card-section class="bg-grey-9 text-white">
           <div class="text-h6">Only fetch after user select. </div>
           <div class="text-subtitle2">Using form outside of table to filter requests</div>
+          <div class="text-subtitle2">Fetch when param changes</div>
         </q-card-section>
         <q-separator
           dark

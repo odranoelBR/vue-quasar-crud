@@ -6,6 +6,7 @@
 
 
 [![codecov](https://codecov.io/gh/odranoelBR/vue-quasar-crud/branch/main/graph/badge.svg?token=C1R7WA5KCZ)](https://codecov.io/gh/odranoelBR/vue-quasar-crud)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/odranoelbr/vue-quasar-crud?color=9CB922)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f11464cd-75f0-4052-a329-e8b82c144bc6/deploy-status)](https://app.netlify.com/sites/vue-quasar-crud/deploys)
 
 ## Links
