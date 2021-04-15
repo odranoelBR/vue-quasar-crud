@@ -23,7 +23,7 @@ yarn add quasar-app-extension-crud
 
 ```js
 import Vue from 'vue'
-import Plugin from '@quasar/quasar-app-extension-crud'
+import Plugin from 'quasar-ui-crud/src/index.js'
 
 Vue.use(Plugin)
 ```

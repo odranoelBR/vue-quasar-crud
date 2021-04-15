@@ -1,4 +1,4 @@
 import Vue from 'vue'
-import VuePlugin from 'quasar-ui-crud'
+import Plugin from 'quasar-ui-crud/src/index.js'
 
-Vue.use(VuePlugin)
+Vue.use(Plugin)

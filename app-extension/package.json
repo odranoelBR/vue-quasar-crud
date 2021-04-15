@@ -1,6 +1,6 @@
 {
   "name": "quasar-app-extension-crud",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A Quasar App Extension",
   "author": "odranoelo_O@hotmail.com",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "bugs": "",
   "homepage": "",
   "dependencies": {
-    "quasar-ui-crud": "^1.0.0"
+    "quasar-ui-crud": "^1.0.1"
   },
   "engines": {
     "node": ">= 8.9.0",

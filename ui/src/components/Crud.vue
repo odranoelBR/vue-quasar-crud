@@ -141,7 +141,8 @@
    */
 import {
   Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
-  QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
+  QTable, QCardSection, QSeparator, QCard, QDialog, QBtn,
+  QTd, QTr, QCheckbox
 } from 'quasar'
 import { formatForPostValidator } from './helper.js'
 let qTableProps = JSON.parse(JSON.stringify(QTable.options.props))
@@ -156,7 +157,8 @@ export default {
   name: 'Crud',
   components: {
     Dialog, Notify, QSelect, QInput, QOptionGroup, QToggle,
-    QTable, QCardSection, QSeparator, QCard, QDialog, QBtn
+    QTable, QCardSection, QSeparator, QCard, QDialog, QBtn,
+    QTd, QTr, QCheckbox
   },
   props: {
     ...qTableProps,

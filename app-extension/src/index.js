@@ -10,6 +10,9 @@ function extendConf (conf) {
   // register our boot file
   conf.boot.push('~quasar-app-extension-crud/src/boot/register.js')
 
+  conf.framework.plugins.push('Dialog')
+  conf.framework.plugins.push('Notify')
+
   // make sure app extension files & ui package gets transpiled
   conf.build.transpileDependencies.push(/quasar-app-extension-crud[\\/]src/)
 }
