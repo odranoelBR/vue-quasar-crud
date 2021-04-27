@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - vue-quasar-crud:/app
+      - C:\Users\Leo\Documents\Projetos\vue-quasar-crud:/app
     stdin_open: true
     tty: true
     environment:
