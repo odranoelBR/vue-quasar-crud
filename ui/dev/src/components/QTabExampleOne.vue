@@ -38,10 +38,27 @@
           :columns.sync="columns"
           :http="axios"
           :list-index="list => list.data"
+          :pagination.sync="pagination"
+          @request="request"
+          :filter="filter"
           api="api/users"
           title="Emails"
           row-key="id"
-        />
+        >
+          <template v-slot:top-right>
+            <q-input
+              borderless
+              dense
+              debounce="300"
+              v-model="filter"
+              placeholder="Search"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+        </crud>
       </q-tab-panel>
 
       <q-tab-panel name="template">
@@ -72,7 +89,20 @@ export default {
   created () {
     this.axios = axios.create({ baseURL: 'https://reqres.in/' })
   },
+  methods: {
+    request (props) {
+      console.log(props)
+    }
+  },
   data: () => ({
+    pagination: {
+      sortBy: 'desc',
+      descending: false,
+      page: 1,
+      rowsPerPage: 3,
+      rowsNumber: 10
+    },
+    filter: null,
     tab: 'example',
     axios: null,
     code: `<crud
@@ -90,7 +120,6 @@ export default {
         label: 'Name',
         align: 'left',
         field: 'first_name',
-        sortable: true,
         qComponent: 'QInput',
         value: '',
         size: '6',
@@ -104,7 +133,6 @@ export default {
         label: 'Email',
         align: 'center',
         field: 'email',
-        sortable: true,
         qComponent: 'QInput',
         value: '',
         size: '6',

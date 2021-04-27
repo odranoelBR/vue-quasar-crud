@@ -46,6 +46,7 @@
       </template>
 
       <template v-slot:top-right>
+        <slot name="top-right" />
         <div class="row q-col-gutter-sm q-pa-sm">
           <div
             v-if="someSelected && hasCustomSelectedSlot"
